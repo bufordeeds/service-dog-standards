@@ -32,8 +32,48 @@ async function main() {
   const adminPassword = await hashPassword('Admin123!');
   const trainerPassword = await hashPassword('Trainer123!');
   const handlerPassword = await hashPassword('Handler123!');
+  const superAdminPassword = await hashPassword('SuperAdmin123!');
 
-  // Create Super Admin user
+  // Create Generic Super Admin account
+  const superAdminUser = await prisma.user.upsert({
+    where: { email: 'superadmin@servicedogstandards.com' },
+    update: {},
+    create: {
+      email: 'superadmin@servicedogstandards.com',
+      hashedPassword: superAdminPassword,
+      firstName: 'Super',
+      lastName: 'Admin',
+      role: 'SUPER_ADMIN',
+      accountType: 'INDIVIDUAL',
+      memberNumber: generateMemberNumber(),
+      organizationId: sdsOrg.id,
+      emailVerified: new Date(),
+      profileComplete: 95,
+      setupStep: 5,
+      isActive: true,
+      phone: null,
+      profileImage: null,
+      bannerImage: null,
+      bio: 'Generic Super Administrator Account',
+      website: null,
+      address: null,
+      coordinates: null,
+      timezone: null,
+      publicProfile: true,
+      emailNotifications: true,
+      smsNotifications: false,
+      trainerUrl: null,
+      businessName: null,
+      businessLicense: null,
+      insuranceInfo: null,
+      specialties: [],
+      lastLoginAt: null,
+      termsAcceptedAt: new Date(),
+      privacyAcceptedAt: new Date(),
+    },
+  });
+
+  // Create System Super Admin user
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@servicedogstandards.com' },
     update: {},
@@ -53,6 +93,9 @@ async function main() {
       bio: 'System administrator for Service Dog Standards platform.',
     },
   });
+
+  console.log('✅ Created Generic Super Admin account');
+  console.log('✅ Created System Admin account');
 
   // Create Trainer user
   const trainerUser = await prisma.user.upsert({

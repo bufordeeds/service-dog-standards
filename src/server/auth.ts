@@ -6,7 +6,6 @@ import {
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { loginSchema } from "~/lib/validations/auth";
@@ -49,11 +48,10 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: "database",
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
-  adapter: PrismaAdapter(prisma),
   pages: {
     signIn: '/auth/login',
     error: '/auth/error',
@@ -129,6 +127,19 @@ export const authOptions: NextAuthOptions = {
     ] : []),
   ],
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        // Initial sign in - add user data to token
+        token.id = user.id;
+        token.role = user.role;
+        token.accountType = user.accountType;
+        token.organizationId = user.organizationId;
+        token.profileComplete = user.profileComplete;
+        token.memberNumber = user.memberNumber;
+        token.emailVerified = user.emailVerified;
+      }
+      return token;
+    },
     async signIn({ user, account }) {
       // Handle OAuth account linking and email verification
       if (account?.provider === "google") {
@@ -147,28 +158,15 @@ export const authOptions: NextAuthOptions = {
       
       return true;
     },
-    async session({ session, user }) {
-      if (session.user && user) {
-        // Get fresh user data with relations
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: { 
-            organization: true,
-            agreements: true
-          }
-        });
-
-        if (dbUser) {
-          const profileComplete = calculateProfileCompletion(dbUser);
-
-          session.user.id = dbUser.id;
-          session.user.role = dbUser.role;
-          session.user.accountType = dbUser.accountType;
-          session.user.organizationId = dbUser.organizationId;
-          session.user.profileComplete = profileComplete;
-          session.user.memberNumber = dbUser.memberNumber ?? undefined;
-          session.user.emailVerified = dbUser.emailVerified;
-        }
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.accountType = token.accountType as string;
+        session.user.organizationId = token.organizationId as string;
+        session.user.profileComplete = token.profileComplete as number;
+        session.user.memberNumber = token.memberNumber as string | undefined;
+        session.user.emailVerified = token.emailVerified as Date | null;
       }
       
       return session;

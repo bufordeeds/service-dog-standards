@@ -5,7 +5,7 @@ import * as React from "react"
 // Force dynamic rendering for authenticated routes
 export const dynamic = 'force-dynamic'
 import { DashboardWrapper } from "@/components/layout/dashboard-wrapper"
-import { DashboardPageHeader } from "@/components/layout/dashboard-page-header"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/ui/status-badge"
@@ -75,16 +75,37 @@ export default function DashboardPage() {
   return (
     <DashboardWrapper>
       <div className="space-y-6">
-        <DashboardPageHeader
-          title="Dashboard"
-          description="Welcome back! Here&apos;s an overview of your Service Dog Standards account."
-          actions={
-            <Button className="sds-btn-primary">
-              <Plus className="w-4 h-4 mr-2" />
-              Register New Dog
-            </Button>
-          }
-        />
+        <DashboardHeader />
+
+        {/* Quick Actions */}
+        <Card className="sds-pod">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Get started with common tasks
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              <Button className="sds-btn-primary h-16 flex-col gap-2">
+                <Plus className="h-5 w-5" />
+                <span className="text-sm">Register Dog</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2">
+                <FileText className="h-5 w-5" />
+                <span className="text-sm">View Agreements</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2">
+                <Users className="h-5 w-5" />
+                <span className="text-sm">Find Trainers</span>
+              </Button>
+              <Button variant="outline" className="h-16 flex-col gap-2">
+                <PawPrint className="h-5 w-5" />
+                <span className="text-sm">My Dogs</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Stats Grid */}
         <div className="sds-dashboard-grid">
@@ -176,35 +197,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="sds-pod">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common tasks and frequently used features
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <PawPrint className="h-6 w-6" />
-                <span className="text-sm">Register Dog</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <FileText className="h-6 w-6" />
-                <span className="text-sm">View Certificates</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <Users className="h-6 w-6" />
-                <span className="text-sm">Find Trainers</span>
-              </Button>
-              <Button variant="outline" className="h-20 flex-col gap-2">
-                <AlertCircle className="h-6 w-6" />
-                <span className="text-sm">Renew Agreement</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </DashboardWrapper>
   )

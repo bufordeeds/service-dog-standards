@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { httpBatchLink } from "@trpc/client"
 import { createTRPCReact } from "@trpc/react-query"
 import { useState } from "react"
+import { SessionProvider } from "next-auth/react"
 import superjson from "superjson"
 
 import type { AppRouter } from "@/server/api/root"
@@ -43,11 +44,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   )
 
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </api.Provider>
+    <SessionProvider>
+      <api.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </api.Provider>
+    </SessionProvider>
   )
 }
