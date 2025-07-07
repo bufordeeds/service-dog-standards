@@ -1,6 +1,9 @@
 "use client"
 
 import * as React from "react"
+
+// Force dynamic rendering for authenticated routes
+export const dynamic = 'force-dynamic'
 import { DashboardWrapper } from "@/components/layout/dashboard-wrapper"
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
