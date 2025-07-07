@@ -296,7 +296,7 @@ export const authRouter = createTRPCRouter({
     .input(z.object({
       type: z.enum(["TRAINING_BEHAVIOR_STANDARDS", "TERMS_OF_SERVICE", "PRIVACY_POLICY", "TRAINER_AGREEMENT"]),
       version: z.string(),
-      content: z.any(),
+      content: z.record(z.unknown()),
     }))
     .mutation(async ({ ctx, input }) => {
       const { type, version, content } = input;
@@ -321,7 +321,8 @@ export const authRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           type,
           version,
-          content,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          content: content as any, // Prisma JSON type
           acceptedAt: new Date(),
           expiresAt,
           isActive: true,

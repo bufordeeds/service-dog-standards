@@ -129,11 +129,11 @@ export const authOptions: NextAuthOptions = {
     ] : []),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // Handle OAuth account linking and email verification
       if (account?.provider === "google") {
         const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! }
+          where: { email: user.email ?? undefined }
         });
         
         if (existingUser && !existingUser.emailVerified) {

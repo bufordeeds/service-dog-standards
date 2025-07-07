@@ -32,7 +32,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json() as { email?: string; password?: string };
+    const { email, password } = body;
     
     if (!email || !password) {
       return NextResponse.json({
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
       user: {
         id: user.id,
         email: user.email,
-        name: `${user.firstName} ${user.lastName}`,
+        name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim(),
         role: user.role,
         organizationId: user.organizationId,
         profileComplete: user.profileComplete,

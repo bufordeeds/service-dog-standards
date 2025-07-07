@@ -17,6 +17,7 @@ export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 export { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./sheet"
 export { Popover, PopoverContent, PopoverTrigger } from "./popover"
 export { Separator } from "./separator"
+export { Switch } from "./switch"
 export { Toaster } from "./toaster"
 export { useToast } from "../../hooks/use-toast"
 export {
