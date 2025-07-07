@@ -351,4 +351,76 @@ export const authRouter = createTRPCRouter({
 
       return organization;
     }),
+
+  // Get public profile by user ID
+  getPublicProfile: protectedProcedure
+    .input(z.object({
+      userId: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      
+      // Check if it's the user's own profile
+      if (userId === ctx.session.user.id) {
+        // Return full profile for own profile
+        return ctx.prisma.user.findUnique({
+          where: { id: userId },
+          include: {
+            organization: true,
+            agreements: {
+              where: { isActive: true },
+              orderBy: { createdAt: 'desc' },
+            },
+            ownedDogs: {
+              select: {
+                id: true,
+                name: true,
+                registrationNum: true,
+                status: true,
+                profileImage: true,
+              },
+            },
+          },
+        });
+      }
+
+      // For other users, check privacy settings and return limited info
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          role: true,
+          accountType: true,
+          memberNumber: true,
+          profileImage: true,
+          bio: true,
+          city: true,
+          state: true,
+          website: true,
+          title: true,
+          createdAt: true,
+          publicProfile: true,
+          publicEmail: true,
+          publicPhone: true,
+          phone: true, // Only included if publicPhone is true
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // Return limited profile data based on privacy settings
+      return {
+        ...user,
+        email: user.publicEmail ? user.email : undefined,
+        phone: user.publicPhone ? user.phone : undefined,
+      };
+    }),
 });

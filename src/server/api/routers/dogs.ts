@@ -36,10 +36,10 @@ export const dogsRouter = createTRPCRouter({
 
       return dogs.map(dog => ({
         ...dog,
-        profileImage: dog.images[0]?.url || dog.profileImage,
+        profileImage: dog.images[0]?.url ?? dog.profileImage,
         teamMembers: dog.userRelationships.map(rel => ({
           id: rel.user.id,
-          name: `${rel.user.firstName} ${rel.user.lastName}`,
+          name: `${rel.user.firstName ?? ''} ${rel.user.lastName ?? ''}`.trim(),
           email: rel.user.email,
           role: rel.user.role,
           relationship: rel.relationship,
