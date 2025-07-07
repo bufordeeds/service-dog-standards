@@ -66,7 +66,7 @@ export default function PublicProfilePage() {
     return "U"
   }
 
-  const isOwnProfile = (currentUser as any)?.id === userId
+  const isOwnProfile = currentUser?.id === userId
 
   if (isLoading) {
     return (

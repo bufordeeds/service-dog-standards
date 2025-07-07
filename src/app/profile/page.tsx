@@ -69,14 +69,14 @@ export default function ProfilePage() {
   React.useEffect(() => {
     if (profile) {
       setFormData({
-        firstName: (profile as any).firstName ?? "",
-        lastName: (profile as any).lastName ?? "",
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
         email: profile.email ?? "",
         phone: profile.phone ?? "",
-        bio: (profile as any).bio ?? "",
-        city: (profile as any).city ?? "",
-        state: (profile as any).state ?? "",
-        website: (profile as any).website ?? "",
+        bio: profile.bio ?? "",
+        city: profile.city ?? "",
+        state: profile.state ?? "",
+        website: profile.website ?? "",
       })
       setProfileImage(profile.profileImage ?? null)
     }
@@ -93,14 +93,14 @@ export default function ProfilePage() {
   const handleCancel = () => {
     if (profile) {
       setFormData({
-        firstName: (profile as any).firstName ?? "",
-        lastName: (profile as any).lastName ?? "",
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
         email: profile.email ?? "",
         phone: profile.phone ?? "",
-        bio: (profile as any).bio ?? "",
-        city: (profile as any).city ?? "",
-        state: (profile as any).state ?? "",
-        website: (profile as any).website ?? "",
+        bio: profile.bio ?? "",
+        city: profile.city ?? "",
+        state: profile.state ?? "",
+        website: profile.website ?? "",
       })
       setProfileImage(profile.profileImage ?? null)
     }
