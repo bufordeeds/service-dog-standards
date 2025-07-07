@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "~/server/auth";
+import { auth } from "~/server/auth";
 import { prisma } from "~/server/db";
 import { verifyPassword } from "~/lib/auth";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     
     return NextResponse.json({
       status: "success",

@@ -1,6 +1,5 @@
-import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
-import type { NextRequestWithAuth } from "next-auth/middleware"
+import { auth } from "~/server/auth"
 
 // Define protected routes and their required roles
 const protectedRoutes = {
@@ -70,10 +69,10 @@ function hasRequiredRole(userRole: string | undefined, requiredRoles: string[]):
   return requiredRoles.includes(userRole)
 }
 
-export default withAuth(
-  function middleware(req: NextRequestWithAuth) {
+export default auth(function middleware(req) {
     const { pathname } = req.nextUrl
-    const token = req.nextauth?.token
+    const session = req.auth
+    const token = session?.user
     
     // Allow public routes
     if (isPublicRoute(pathname)) {
@@ -95,7 +94,7 @@ export default withAuth(
       }
       
       // Check role permissions
-      if (!hasRequiredRole(token?.role as string, requiredRoles)) {
+      if (!hasRequiredRole(token?.role, requiredRoles)) {
         // Redirect to dashboard with error
         const dashboardUrl = new URL("/dashboard", req.url)
         dashboardUrl.searchParams.set("error", "insufficient-permissions")
@@ -104,27 +103,7 @@ export default withAuth(
     }
     
     return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl
-        
-        // Allow public routes without authentication
-        if (isPublicRoute(pathname)) {
-          return true
-        }
-        
-        // For protected routes, require a valid token
-        return !!token
-      },
-    },
-    pages: {
-      signIn: "/auth/login",
-      error: "/auth/error",
-    },
-  }
-)
+} as any)
 
 export const config = {
   matcher: [

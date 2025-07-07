@@ -1,9 +1,8 @@
-import { type GetServerSidePropsContext } from "next";
 import {
-  getServerSession,
-  type NextAuthOptions,
+  type NextAuthConfig,
   type DefaultSession,
 } from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { env } from "~/env.mjs";
@@ -46,7 +45,7 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authOptions: NextAuthOptions = {
+export const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -185,17 +184,11 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+
 /**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
+ * Wrapper for `auth` function for server-side usage.
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = (ctx?: {
-  req: GetServerSidePropsContext["req"];
-  res: GetServerSidePropsContext["res"];
-}) => {
-  if (ctx) {
-    return getServerSession(ctx.req, ctx.res, authOptions);
-  }
-  return getServerSession(authOptions);
-};
+export const getServerAuthSession = auth;
