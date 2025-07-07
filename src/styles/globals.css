@@ -10,42 +10,104 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 265 56% 48%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 186 31% 47%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 265 56% 48%;
     --radius: 0.75rem;
+
+    /* SDS Brand Colors */
+    --sds-brand: 265 56% 48%; /* #754FA8 - Primary brand purple */
+    --sds-brand-light: 272 68% 70%; /* #9165E8 - Light brand purple */
+    --sds-brand-dark: 267 44% 37%; /* #4A4383 - Dark purple */
+    --sds-brand-darker: 268 45% 28%; /* #363258 - Darker purple */
+    
+    --sds-accent: 186 31% 47%; /* #3EA6B2 - Accent teal */
+    --sds-accent-teal: 182 28% 41%; /* #4D8A87 - Base teal */
+    
+    --sds-success: 132 68% 48%; /* #1BD941 - Good green */
+    --sds-warning: 25 67% 65%; /* #D69B52 - Warning orange */
+    --sds-error: 5 93% 53%; /* #FF200D - Error red */
+    
+    --sds-gray: 0 0% 37%; /* #5E5D5C - Base gray */
+    --sds-gray-light: 0 0% 90%; /* #E4E4E4 - Light gray */
+    --sds-gray-dark: 0 0% 29%; /* #4A4A4A - Dark gray */
+    --sds-white: 0 0% 98%; /* #FAFAFA - White */
+    --sds-off-white: 240 100% 99%; /* #FEFDFD - Off white */
+
+    /* SDS Purple Scale */
+    --sds-purple-50: 272 68% 95%;
+    --sds-purple-100: 272 68% 90%;
+    --sds-purple-200: 272 68% 80%;
+    --sds-purple-300: 272 68% 70%;
+    --sds-purple-400: 267 56% 60%;
+    --sds-purple-500: 265 56% 48%;
+    --sds-purple-600: 267 44% 37%;
+    --sds-purple-700: 268 45% 28%;
+    --sds-purple-800: 268 45% 20%;
+    --sds-purple-900: 268 45% 15%;
+
+    /* SDS Teal Scale */
+    --sds-teal-50: 186 31% 95%;
+    --sds-teal-100: 186 31% 85%;
+    --sds-teal-200: 186 31% 75%;
+    --sds-teal-300: 186 31% 65%;
+    --sds-teal-400: 186 31% 55%;
+    --sds-teal-500: 186 31% 47%;
+    --sds-teal-600: 182 28% 41%;
+    --sds-teal-700: 182 28% 35%;
+    --sds-teal-800: 182 28% 25%;
+    --sds-teal-900: 182 28% 18%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --background: 268 45% 6%;
+    --foreground: 0 0% 98%;
+    --card: 268 45% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 268 45% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 272 68% 70%;
+    --primary-foreground: 268 45% 6%;
+    --secondary: 268 45% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 268 45% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 186 31% 65%;
+    --accent-foreground: 268 45% 6%;
+    --destructive: 5 93% 65%;
+    --destructive-foreground: 268 45% 6%;
+    --border: 268 45% 20%;
+    --input: 268 45% 20%;
+    --ring: 272 68% 70%;
+
+    /* SDS Dark Mode Colors */
+    --sds-brand: 272 68% 70%;
+    --sds-brand-light: 272 68% 80%;
+    --sds-brand-dark: 267 44% 37%;
+    --sds-brand-darker: 268 45% 28%;
+    
+    --sds-accent: 186 31% 65%;
+    --sds-accent-teal: 182 28% 60%;
+    
+    --sds-success: 132 68% 60%;
+    --sds-warning: 25 67% 70%;
+    --sds-error: 5 93% 65%;
+    
+    --sds-gray: 0 0% 65%;
+    --sds-gray-light: 0 0% 25%;
+    --sds-gray-dark: 0 0% 15%;
+    --sds-white: 0 0% 6%;
+    --sds-off-white: 0 0% 8%;
   }
 }
 
@@ -55,5 +117,124 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* SDS Dashboard Pod Styles */
+  .sds-pod {
+    @apply bg-card border border-border rounded-pod shadow-pod transition-all duration-200;
+    @apply hover:shadow-pod-hover hover:border-sds-brand/20;
+  }
+
+  .sds-pod-header {
+    @apply p-6 border-b border-border;
+  }
+
+  .sds-pod-content {
+    @apply p-6;
+  }
+
+  /* SDS Button Variants */
+  .sds-btn-primary {
+    @apply bg-sds-brand hover:bg-sds-brand-dark text-white;
+    @apply shadow-sds hover:shadow-sds-lg transition-all duration-200;
+  }
+
+  .sds-btn-secondary {
+    @apply bg-sds-accent hover:bg-sds-accent-teal text-white;
+    @apply shadow-sds hover:shadow-sds-lg transition-all duration-200;
+  }
+
+  /* SDS Status Indicators */
+  .sds-status-active {
+    @apply bg-sds-success/10 text-sds-success border-sds-success/20;
+  }
+
+  .sds-status-pending {
+    @apply bg-sds-warning/10 text-sds-warning border-sds-warning/20;
+  }
+
+  .sds-status-inactive {
+    @apply bg-sds-gray-light/50 text-sds-gray border-sds-gray/20;
+  }
+
+  .sds-status-error {
+    @apply bg-sds-error/10 text-sds-error border-sds-error/20;
+  }
+
+  /* SDS Navigation */
+  .sds-nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium;
+    @apply text-muted-foreground hover:text-foreground hover:bg-accent;
+    @apply transition-colors duration-200;
+  }
+
+  .sds-nav-item.active {
+    @apply bg-sds-brand/10 text-sds-brand border-l-2 border-sds-brand;
+  }
+
+  /* SDS Typography */
+  .sds-heading-1 {
+    @apply text-3xl font-bold tracking-tight text-foreground;
+  }
+
+  .sds-heading-2 {
+    @apply text-2xl font-semibold tracking-tight text-foreground;
+  }
+
+  .sds-heading-3 {
+    @apply text-xl font-semibold text-foreground;
+  }
+
+  .sds-body {
+    @apply text-base text-muted-foreground leading-relaxed;
+  }
+
+  .sds-caption {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* SDS Form Elements */
+  .sds-input {
+    @apply border-input bg-background hover:border-sds-brand/30 focus:border-sds-brand;
+    @apply ring-offset-background focus:ring-2 focus:ring-sds-brand/20;
+  }
+
+  .sds-label {
+    @apply text-sm font-medium text-foreground;
+  }
+
+  /* SDS Dashboard Grid */
+  .sds-dashboard-grid {
+    @apply grid gap-6;
+    @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .sds-dashboard-grid-wide {
+    @apply grid gap-6;
+    @apply grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+  }
+
+  /* SDS Layout */
+  .sds-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .sds-section {
+    @apply py-8 lg:py-12;
+  }
+
+  /* SDS Animations */
+  .sds-fade-in {
+    @apply animate-in fade-in-0 duration-500;
+  }
+
+  .sds-slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-500;
+  }
+
+  .sds-scale-in {
+    @apply animate-in zoom-in-95 duration-300;
   }
 }

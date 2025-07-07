@@ -56,7 +56,6 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   pages: {
     signIn: '/auth/login',
-    signUp: '/auth/register',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },
@@ -117,7 +116,7 @@ export const authOptions: NextAuthOptions = {
           accountType: user.accountType,
           organizationId: user.organizationId,
           profileComplete,
-          memberNumber: user.memberNumber,
+          memberNumber: user.memberNumber ?? undefined,
           emailVerified: user.emailVerified,
         };
       }
@@ -167,7 +166,7 @@ export const authOptions: NextAuthOptions = {
           session.user.accountType = dbUser.accountType;
           session.user.organizationId = dbUser.organizationId;
           session.user.profileComplete = profileComplete;
-          session.user.memberNumber = dbUser.memberNumber;
+          session.user.memberNumber = dbUser.memberNumber ?? undefined;
           session.user.emailVerified = dbUser.emailVerified;
         }
       }
