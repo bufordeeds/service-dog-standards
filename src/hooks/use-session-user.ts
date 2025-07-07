@@ -22,8 +22,8 @@ export function useSessionUser() {
     userId: user?.id,
     email: user?.email,
     name: user?.name,
-    firstName: user?.name?.split(" ")[0],
-    lastName: user?.name?.split(" ").slice(1).join(" "),
+    firstName: user?.name?.split(" ")[0] ?? "",
+    lastName: user?.name?.split(" ").slice(1).join(" ") ?? "",
     image: user?.image,
     
     // SDS-specific data

@@ -6,20 +6,14 @@ import * as React from "react"
 export const dynamic = 'force-dynamic'
 import { DashboardWrapper } from "@/components/layout/dashboard-wrapper"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { AgreementCard } from "@/components/dashboard/agreement-card"
+import { AccountCompletionCard } from "@/components/dashboard/account-completion-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/ui/status-badge"
-import { CompletionGauge } from "@/components/ui/completion-gauge"
 import { Plus, PawPrint, FileText, Users, AlertCircle } from "lucide-react"
 
 export default function DashboardPage() {
-  // Sample data - would come from API in real implementation
-  const completionSteps = [
-    { id: "1", title: "Profile Setup", completed: true, description: "Complete your basic profile information" },
-    { id: "2", title: "Photo Upload", completed: true, description: "Add a profile photo" },
-    { id: "3", title: "Agreement", completed: false, description: "Accept SDS Training Standards" },
-    { id: "4", title: "Registration", completed: false, description: "Complete account registration" },
-  ]
 
   const stats = [
     {
@@ -131,24 +125,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Profile Completion */}
-          <Card className="sds-pod">
-            <CardHeader>
-              <CardTitle>Complete Your Profile</CardTitle>
-              <CardDescription>
-                Finish these steps to fully activate your SDS account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CompletionGauge
-                steps={completionSteps}
-                variant="circular"
-                size="md"
-                showSteps={true}
-              />
-            </CardContent>
-          </Card>
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Agreement Card */}
+          <AgreementCard />
+
+          {/* Account Completion */}
+          <AccountCompletionCard />
 
           {/* Recent Activity */}
           <Card className="sds-pod">

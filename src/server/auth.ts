@@ -138,7 +138,7 @@ export const authOptions: NextAuthOptions = {
         token.memberNumber = user.memberNumber;
         token.emailVerified = user.emailVerified;
       }
-      return token;
+      return Promise.resolve(token);
     },
     async signIn({ user, account }) {
       // Handle OAuth account linking and email verification
@@ -169,7 +169,7 @@ export const authOptions: NextAuthOptions = {
         session.user.emailVerified = token.emailVerified as Date | null;
       }
       
-      return session;
+      return Promise.resolve(session);
     },
   },
   events: {

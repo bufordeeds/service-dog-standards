@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 
 export function DashboardHeader() {
+  const userContext = useUser()
   const { 
     user, 
     getDisplayName, 
@@ -24,7 +25,7 @@ export function DashboardHeader() {
     isAuthenticated,
     memberNumber,
     accountType 
-  } = useUser()
+  } = userContext
 
   if (!isAuthenticated || !user) {
     return null

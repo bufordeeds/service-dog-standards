@@ -75,7 +75,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       if (!user?.name) return user?.email?.[0]?.toUpperCase() || "U"
       return user.name
         .split(" ")
-        .map((n: string) => n[0])
+        .map((n: string) => n[0] ?? "")
         .join("")
         .toUpperCase()
         .slice(0, 2)
