@@ -1,67 +1,784 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Service Dog Standards - Comprehensive Database Schema
+// This schema supports multi-tenant architecture, role-based access control,
+// service dog registry, e-commerce, and administrative functions.
 
 generator client {
-    provider = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+  provider = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // For Vercel Postgres connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// ============================================================================
+// CORE SYSTEM MODELS
+// ============================================================================
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  subdomain   String   @unique
+  domain      String?  // Custom domain support
+  theme       Json     // Brand colors, logos, etc.
+  settings    Json     // Organization-specific settings
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  users       User[]
+  dogs        Dog[]
+  orders      Order[]
+  donations   Donation[]
+  items       Item[]
+  carts       Cart[]
+  sessions    Session[]
+  
+  @@map("organizations")
 }
 
-// Necessary for Next auth
+// ============================================================================
+// USER MANAGEMENT
+// ============================================================================
+
+model User {
+  id                String       @id @default(cuid())
+  email             String       @unique
+  emailVerified     DateTime?
+  hashedPassword    String?
+  role              UserRole     @default(HANDLER)
+  accountType       AccountType  @default(INDIVIDUAL)
+  memberNumber      String?      @unique // SDS member number
+  
+  // Profile completion tracking
+  profileComplete   Float        @default(0) // 0-100 percentage
+  setupStep         Int          @default(0) // Onboarding step
+  isActive          Boolean      @default(true)
+  
+  // Basic profile
+  firstName         String?
+  lastName          String?
+  phone             String?
+  profileImage      String?
+  bannerImage       String?
+  bio               String?
+  website           String?
+  
+  // Address information
+  address           Json?        // Street, city, state, zip, country
+  coordinates       Json?        // lat, lng for search
+  timezone          String?
+  
+  // Account settings
+  publicProfile     Boolean      @default(true)
+  emailNotifications Boolean     @default(true)
+  smsNotifications  Boolean      @default(false)
+  
+  // Trainer-specific fields
+  trainerUrl        String?      @unique // Custom URL for trainers
+  businessName      String?
+  businessLicense   String?
+  insuranceInfo     Json?
+  specialties       String[]     // Areas of expertise
+  
+  // System fields
+  lastLoginAt       DateTime?
+  termsAcceptedAt   DateTime?
+  privacyAcceptedAt DateTime?
+  
+  // Relationships
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  
+  // Auth
+  accounts          Account[]
+  sessions          Session[]
+  
+  // Dogs and relationships
+  ownedDogs         Dog[]        @relation("DogOwner")
+  dogRelationships  DogUserRelationship[]
+  
+  // Agreements
+  agreements        Agreement[]
+  
+  // E-commerce
+  carts             Cart[]
+  orders            Order[]
+  donations         Donation[]
+  
+  // Delegation
+  delegatedFrom     DelegatedAccess[] @relation("DelegatedFrom")
+  delegatedTo       DelegatedAccess[] @relation("DelegatedTo")
+  
+  // Content
+  images            Image[]
+  flagReports       FlagReport[]
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  @@map("users")
+}
+
+// ============================================================================
+// DOG REGISTRY
+// ============================================================================
+
+model Dog {
+  id                String        @id @default(cuid())
+  registrationNum   String        @unique // SDS dog number
+  name              String
+  breed             String?
+  birthDate         DateTime?
+  gender            DogGender?
+  weight            Float?
+  color             String?
+  microchipId       String?
+  
+  // Profile
+  profileImage      String?
+  bannerImage       String?
+  bio               String?
+  
+  // Status tracking
+  status            DogStatus     @default(ACTIVE)
+  statusReason      String?       // Reason for inactive status
+  statusDate        DateTime?     // When status changed
+  
+  // Training information
+  trainingStartDate DateTime?
+  trainingEndDate   DateTime?
+  trainingNotes     String?
+  
+  // Public visibility
+  publicProfile     Boolean       @default(true)
+  showInDirectory   Boolean       @default(true)
+  
+  // Relationships
+  ownerId           String
+  owner             User          @relation("DogOwner", fields: [ownerId], references: [id])
+  
+  userRelationships DogUserRelationship[]
+  
+  // Content
+  images            Image[]
+  documents         Document[]
+  achievements      Achievement[]
+  
+  // E-commerce
+  orderItems        OrderItem[]
+  
+  organizationId    String
+  organization      Organization  @relation(fields: [organizationId], references: [id])
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  @@map("dogs")
+}
+
+model DogUserRelationship {
+  id                String              @id @default(cuid())
+  
+  dogId             String
+  dog               Dog                 @relation(fields: [dogId], references: [id])
+  
+  userId            String
+  user              User                @relation(fields: [userId], references: [id])
+  
+  relationship      DogRelationship     // HANDLER, TRAINER, AIDE
+  status            RelationshipStatus  @default(PENDING)
+  
+  // Invitation system
+  invitedAt         DateTime            @default(now())
+  invitedBy         String?             // User ID who sent invitation
+  respondedAt       DateTime?
+  
+  // Permissions
+  canEdit           Boolean             @default(false)
+  canView           Boolean             @default(true)
+  canOrder          Boolean             @default(false)
+  
+  notes             String?
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  @@unique([dogId, userId, relationship])
+  @@map("dog_user_relationships")
+}
+
+// ============================================================================
+// AGREEMENTS & COMPLIANCE
+// ============================================================================
+
+model Agreement {
+  id                String          @id @default(cuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+  
+  type              AgreementType
+  version           String          // Version identifier
+  content           Json            // Agreement content snapshot
+  
+  acceptedAt        DateTime
+  expiresAt         DateTime?       // 4-year expiration
+  isActive          Boolean         @default(true)
+  
+  // Tracking
+  ipAddress         String?
+  userAgent         String?
+  
+  createdAt         DateTime        @default(now())
+  
+  @@map("agreements")
+}
+
+// ============================================================================
+// E-COMMERCE
+// ============================================================================
+
+model Item {
+  id                String          @id @default(cuid())
+  name              String
+  description       String?
+  type              ItemType        // PHYSICAL, DIGITAL, BUNDLE
+  
+  // Pricing
+  price             Decimal         @db.Decimal(10, 2)
+  taxable           Boolean         @default(true)
+  
+  // Inventory
+  sku               String?         @unique
+  stockQuantity     Int?            // null = unlimited
+  isActive          Boolean         @default(true)
+  
+  // Digital items
+  digitalFiles      Json?           // File URLs and metadata
+  
+  // Physical items
+  weight            Float?          // for shipping
+  dimensions        Json?           // length, width, height
+  
+  // Customization
+  requiresDog       Boolean         @default(false) // Requires dog selection
+  customizable      Boolean         @default(false)
+  customFields      Json?           // Available customization options
+  
+  // Media
+  images            String[]        // Image URLs
+  
+  // Relationships
+  orderItems        OrderItem[]
+  cartItems         CartItem[]
+  
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("items")
+}
+
+model Cart {
+  id                String          @id @default(cuid())
+  userId            String?         // null for anonymous carts
+  user              User?           @relation(fields: [userId], references: [id])
+  
+  sessionId         String?         // For anonymous users
+  
+  // Status
+  status            CartStatus      @default(ACTIVE)
+  
+  // Shipping
+  shippingAddress   Json?
+  shippingMethod    String?
+  shippingCost      Decimal?        @db.Decimal(10, 2)
+  
+  // Tax
+  taxRate           Decimal?        @db.Decimal(5, 4)
+  taxAmount         Decimal?        @db.Decimal(10, 2)
+  
+  // Totals
+  subtotal          Decimal         @default(0) @db.Decimal(10, 2)
+  total             Decimal         @default(0) @db.Decimal(10, 2)
+  
+  // Relationships
+  items             CartItem[]
+  
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("carts")
+}
+
+model CartItem {
+  id                String          @id @default(cuid())
+  cartId            String
+  cart              Cart            @relation(fields: [cartId], references: [id])
+  
+  itemId            String
+  item              Item            @relation(fields: [itemId], references: [id])
+  
+  quantity          Int             @default(1)
+  unitPrice         Decimal         @db.Decimal(10, 2)
+  totalPrice        Decimal         @db.Decimal(10, 2)
+  
+  // Customization
+  customization     Json?           // Custom text, dog selection, etc.
+  dogId             String?         // For dog-specific items
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("cart_items")
+}
+
+model Order {
+  id                String          @id @default(cuid())
+  orderNumber       String          @unique
+  
+  userId            String?         // null for guest orders
+  user              User?           @relation(fields: [userId], references: [id])
+  
+  // Status
+  status            OrderStatus     @default(PENDING)
+  
+  // Customer info
+  customerEmail     String
+  customerPhone     String?
+  
+  // Addresses
+  shippingAddress   Json
+  billingAddress    Json
+  
+  // Shipping
+  shippingMethod    String?
+  shippingCost      Decimal         @db.Decimal(10, 2)
+  shippingLabel     Json?           // EasyPost label data
+  trackingNumber    String?
+  
+  // Payment
+  paymentIntentId   String?         // Stripe payment intent
+  paymentStatus     PaymentStatus   @default(PENDING)
+  
+  // Totals
+  subtotal          Decimal         @db.Decimal(10, 2)
+  taxAmount         Decimal         @db.Decimal(10, 2)
+  total             Decimal         @db.Decimal(10, 2)
+  
+  // Fulfillment
+  fulfilledAt       DateTime?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  
+  // Relationships
+  items             OrderItem[]
+  
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id                String          @id @default(cuid())
+  orderId           String
+  order             Order           @relation(fields: [orderId], references: [id])
+  
+  itemId            String
+  item              Item            @relation(fields: [itemId], references: [id])
+  
+  // Dog association
+  dogId             String?
+  dog               Dog?            @relation(fields: [dogId], references: [id])
+  
+  quantity          Int
+  unitPrice         Decimal         @db.Decimal(10, 2)
+  totalPrice        Decimal         @db.Decimal(10, 2)
+  
+  // Customization
+  customization     Json?           // Custom text, options selected
+  
+  // Digital fulfillment
+  digitalFiles      Json?           // Generated PDFs, wallet passes
+  downloadCount     Int             @default(0)
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("order_items")
+}
+
+model Donation {
+  id                String          @id @default(cuid())
+  userId            String?
+  user              User?           @relation(fields: [userId], references: [id])
+  
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("USD")
+  
+  // Donor info
+  donorName         String?
+  donorEmail        String?
+  isAnonymous       Boolean         @default(false)
+  
+  // Payment
+  paymentIntentId   String?
+  paymentStatus     PaymentStatus   @default(PENDING)
+  
+  // Optional dedication
+  dedicationType    String?         // "in_honor", "in_memory"
+  dedicationName    String?
+  dedicationMessage String?
+  
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("donations")
+}
+
+// ============================================================================
+// CONTENT MANAGEMENT
+// ============================================================================
+
+model Image {
+  id                String          @id @default(cuid())
+  filename          String
+  originalName      String
+  mimeType          String
+  size              Int
+  url               String
+  
+  // Metadata
+  width             Int?
+  height            Int?
+  altText           String?
+  caption           String?
+  
+  // Relationships
+  userId            String?
+  user              User?           @relation(fields: [userId], references: [id])
+  
+  dogId             String?
+  dog               Dog?            @relation(fields: [dogId], references: [id])
+  
+  // Usage tracking
+  type              ImageType       // PROFILE, BANNER, GALLERY, PRODUCT
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("images")
+}
+
+model Document {
+  id                String          @id @default(cuid())
+  title             String
+  type              DocumentType    // CERTIFICATE, TRAINING_RECORD, HEALTH_RECORD
+  filename          String
+  originalName      String
+  mimeType          String
+  size              Int
+  url               String
+  
+  // Metadata
+  description       String?
+  isPublic          Boolean         @default(false)
+  expiresAt         DateTime?
+  
+  // Relationships
+  dogId             String
+  dog               Dog             @relation(fields: [dogId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("documents")
+}
+
+model Achievement {
+  id                String          @id @default(cuid())
+  title             String
+  description       String?
+  type              AchievementType // TRAINING, CERTIFICATION, AWARD
+  
+  // Date information
+  achievedAt        DateTime
+  expiresAt         DateTime?
+  
+  // Issuing organization
+  issuer            String?
+  certificateNumber String?
+  
+  // Relationships
+  dogId             String
+  dog               Dog             @relation(fields: [dogId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("achievements")
+}
+
+// ============================================================================
+// ADMINISTRATION
+// ============================================================================
+
+model DelegatedAccess {
+  id                String          @id @default(cuid())
+  
+  fromUserId        String
+  fromUser          User            @relation("DelegatedFrom", fields: [fromUserId], references: [id])
+  
+  toUserId          String
+  toUser            User            @relation("DelegatedTo", fields: [toUserId], references: [id])
+  
+  // Permissions
+  canViewProfile    Boolean         @default(true)
+  canEditProfile    Boolean         @default(false)
+  canManageDogs     Boolean         @default(false)
+  canProcessOrders  Boolean         @default(false)
+  canViewOrders     Boolean         @default(true)
+  
+  // Status
+  status            DelegationStatus @default(PENDING)
+  invitedAt         DateTime        @default(now())
+  acceptedAt        DateTime?
+  revokedAt         DateTime?
+  
+  // Expiration
+  expiresAt         DateTime?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@unique([fromUserId, toUserId])
+  @@map("delegated_access")
+}
+
+model FlagReport {
+  id                String          @id @default(cuid())
+  
+  reporterId        String
+  reporter          User            @relation(fields: [reporterId], references: [id])
+  
+  // What's being flagged
+  targetType        FlagTargetType  // USER, DOG, COMMENT
+  targetId          String
+  
+  reason            FlagReason
+  description       String?
+  
+  // Status
+  status            FlagStatus      @default(PENDING)
+  reviewedAt        DateTime?
+  reviewedBy        String?         // Admin user ID
+  reviewNotes       String?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@map("flag_reports")
+}
+
+// ============================================================================
+// AUTHENTICATION (NextAuth.js)
+// ============================================================================
+
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-    @@unique([provider, providerAccountId])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String   @id @default(cuid())
+  sessionToken  String   @unique
+  userId        String
+  expires       DateTime
+  
+  // Additional session data
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  HANDLER
+  TRAINER
+  AIDE
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AccountType {
+  INDIVIDUAL
+  PROFESSIONAL
+  ORGANIZATION
+}
+
+enum DogGender {
+  MALE
+  FEMALE
+  MALE_NEUTERED
+  FEMALE_SPAYED
+}
+
+enum DogStatus {
+  ACTIVE
+  IN_TRAINING
+  RETIRED
+  WASHED_OUT
+  IN_MEMORIAM
+}
+
+enum DogRelationship {
+  HANDLER
+  TRAINER
+  AIDE
+  EMERGENCY_CONTACT
+}
+
+enum RelationshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED
+}
+
+enum AgreementType {
+  TRAINING_BEHAVIOR_STANDARDS
+  TERMS_OF_SERVICE
+  PRIVACY_POLICY
+  TRAINER_AGREEMENT
+}
+
+enum ItemType {
+  PHYSICAL
+  DIGITAL
+  BUNDLE
+  SUBSCRIPTION
+}
+
+enum CartStatus {
+  ACTIVE
+  ABANDONED
+  CONVERTED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum ImageType {
+  PROFILE
+  BANNER
+  GALLERY
+  PRODUCT
+  DOCUMENT
+}
+
+enum DocumentType {
+  CERTIFICATE
+  TRAINING_RECORD
+  HEALTH_RECORD
+  INSURANCE
+  OTHER
+}
+
+enum AchievementType {
+  TRAINING
+  CERTIFICATION
+  AWARD
+  MILESTONE
+}
+
+enum DelegationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED
+  EXPIRED
+}
+
+enum FlagTargetType {
+  USER
+  DOG
+  COMMENT
+  IMAGE
+}
+
+enum FlagReason {
+  INAPPROPRIATE_CONTENT
+  SPAM
+  HARASSMENT
+  FAKE_PROFILE
+  COPYRIGHT
+  OTHER
+}
+
+enum FlagStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
 }

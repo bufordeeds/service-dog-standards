@@ -124,6 +124,41 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+/** Reusable middleware that enforces users are admins */
+const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  
+  if (ctx.session.user.role !== "ADMIN" && ctx.session.user.role !== "SUPER_ADMIN") {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+/** Reusable middleware that enforces users are trainers or higher */
+const enforceUserIsTrainer = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  
+  const allowedRoles = ["TRAINER", "ADMIN", "SUPER_ADMIN"];
+  if (!allowedRoles.includes(ctx.session.user.role)) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -133,3 +168,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+/**
+ * Admin procedure
+ *
+ * Only accessible to users with ADMIN or SUPER_ADMIN roles.
+ */
+export const adminProcedure = t.procedure.use(enforceUserIsAdmin);
+
+/**
+ * Trainer procedure
+ *
+ * Only accessible to users with TRAINER, ADMIN, or SUPER_ADMIN roles.
+ */
+export const trainerProcedure = t.procedure.use(enforceUserIsTrainer);
