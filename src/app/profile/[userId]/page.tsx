@@ -29,7 +29,7 @@ import Link from "next/link"
 export default function PublicProfilePage() {
   const params = useParams()
   const { user: currentUser } = useUser()
-  const userId = params.userId as string
+  const userId = params?.userId as string
 
   // Get public profile data
   const { data: profile, isLoading, error } = api.auth.getPublicProfile.useQuery(
@@ -93,7 +93,7 @@ export default function PublicProfilePage() {
             </div>
             <h1 className="text-2xl font-bold mb-2">Profile Not Found</h1>
             <p className="text-muted-foreground mb-6">
-              This profile doesn't exist or is private.
+              This profile doesn&apos;t exist or is private.
             </p>
             <Button asChild variant="outline">
               <Link href="/dashboard">
@@ -330,14 +330,14 @@ export default function PublicProfilePage() {
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
                 <CardDescription>
-                  Get in touch with {profile.firstName}
+                  Get in touch with {profile.firstName ?? 'this user'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 {profile.publicEmail && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <a href={`mailto:${profile.email}`} className="text-sds-primary hover:underline">
+                    <a href={`mailto:${profile.email ?? ''}`} className="text-sds-primary hover:underline">
                       {profile.email}
                     </a>
                   </div>

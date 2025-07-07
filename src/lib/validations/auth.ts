@@ -54,12 +54,29 @@ export const emailVerificationSchema = z.object({
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(1, "First name is required").optional(),
   lastName: z.string().min(1, "Last name is required").optional(),
+  email: z.string().email("Invalid email address").optional(),
   phone: z.string().optional(),
   bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
   website: z.string().url("Invalid website URL").optional().or(z.literal("")),
+  profileImage: z.string().optional(),
+  title: z.string().optional(),
+  
+  // Privacy settings
   publicProfile: z.boolean().optional(),
+  publicEmail: z.boolean().optional(),
+  publicPhone: z.boolean().optional(),
+  showInDirectory: z.boolean().optional(),
+  allowMessages: z.boolean().optional(),
+  
+  // Notification preferences
   emailNotifications: z.boolean().optional(),
+  pushNotifications: z.boolean().optional(),
   smsNotifications: z.boolean().optional(),
+  agreementReminders: z.boolean().optional(),
+  trainingUpdates: z.boolean().optional(),
+  systemAnnouncements: z.boolean().optional(),
 });
 
 // Address schema (for profile and shipping)

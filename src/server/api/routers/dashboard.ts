@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
@@ -142,7 +141,7 @@ export const dashboardRouter = createTRPCRouter({
           ...recentUsers.map(user => ({
             id: `user-${user.id}`,
             type: "registration" as const,
-            title: `${user.firstName} ${user.lastName} joined`,
+            title: `${user.firstName ?? ''} ${user.lastName ?? ''} joined`,
             description: `New ${user.role.toLowerCase()} registration`,
             time: user.createdAt,
             status: "approved" as const,
@@ -159,8 +158,8 @@ export const dashboardRouter = createTRPCRouter({
             id: `agreement-${agreement.id}`,
             type: "agreement" as const,
             title: `Agreement expiring soon`,
-            description: `${agreement.user.firstName} ${agreement.user.lastName} - ${agreement.type}`,
-            time: agreement.expiresAt,
+            description: `${agreement.user.firstName ?? ''} ${agreement.user.lastName ?? ''} - ${agreement.type}`,
+            time: agreement.expiresAt ?? new Date(),
             status: "pending" as const,
           })),
         ];
@@ -172,41 +171,37 @@ export const dashboardRouter = createTRPCRouter({
 
       if (role === "TRAINER") {
         // Trainer activity - client and training related
-        const [clientDogs, recentSessions] = await Promise.all([
-          ctx.prisma.dog.findMany({
-            where: {
-              userRelationships: {
-                some: {
-                  userId: userId,
-                  relationship: "TRAINER",
-                },
+        const clientDogs = await ctx.prisma.dog.findMany({
+          where: {
+            userRelationships: {
+              some: {
+                userId: userId,
+                relationship: "TRAINER",
               },
             },
-            orderBy: { updatedAt: 'desc' },
-            take: 3,
-            select: {
-              id: true,
-              name: true,
-              status: true,
-              updatedAt: true,
-              owner: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                },
+          },
+          orderBy: { updatedAt: 'desc' },
+          take: 3,
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            updatedAt: true,
+            owner: {
+              select: {
+                firstName: true,
+                lastName: true,
               },
             },
-          }),
-          // Mock session data - would come from training sessions table
-          [],
-        ]);
+          },
+        });
 
         return [
           ...clientDogs.map(dog => ({
             id: `dog-${dog.id}`,
             type: "training" as const,
             title: `${dog.name} progress updated`,
-            description: `Training with ${dog.owner.firstName} ${dog.owner.lastName}`,
+            description: `Training with ${dog.owner.firstName ?? ''} ${dog.owner.lastName ?? ''}`,
             time: dog.updatedAt,
             status: dog.status === "ACTIVE" ? "complete" as const : "pending" as const,
           })),
@@ -274,7 +269,7 @@ export const dashboardRouter = createTRPCRouter({
 
   // Get quick actions based on user role
   getQuickActions: protectedProcedure
-    .query(async ({ ctx }) => {
+    .query(({ ctx }) => {
       const { role } = ctx.session.user;
       
       if (role === "ADMIN" || role === "SUPER_ADMIN") {

@@ -31,7 +31,7 @@ import { format } from "date-fns"
 import Link from "next/link"
 
 export default function ProfilePage() {
-  const { user, getInitials } = useUser()
+  const { getInitials } = useUser()
   const [isEditing, setIsEditing] = React.useState(false)
   const [profileImage, setProfileImage] = React.useState<string | null>(null)
   
@@ -69,16 +69,16 @@ export default function ProfilePage() {
   React.useEffect(() => {
     if (profile) {
       setFormData({
-        firstName: profile.firstName || "",
-        lastName: profile.lastName || "",
-        email: profile.email || "",
-        phone: profile.phone || "",
-        bio: profile.bio || "",
-        city: profile.city || "",
-        state: profile.state || "",
-        website: profile.website || "",
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
+        email: profile.email ?? "",
+        phone: profile.phone ?? "",
+        bio: profile.bio ?? "",
+        city: profile.city ?? "",
+        state: profile.state ?? "",
+        website: profile.website ?? "",
       })
-      setProfileImage(profile.profileImage)
+      setProfileImage(profile.profileImage ?? null)
     }
   }, [profile])
 
@@ -93,16 +93,16 @@ export default function ProfilePage() {
   const handleCancel = () => {
     if (profile) {
       setFormData({
-        firstName: profile.firstName || "",
-        lastName: profile.lastName || "",
-        email: profile.email || "",
-        phone: profile.phone || "",
-        bio: profile.bio || "",
-        city: profile.city || "",
-        state: profile.state || "",
-        website: profile.website || "",
+        firstName: profile.firstName ?? "",
+        lastName: profile.lastName ?? "",
+        email: profile.email ?? "",
+        phone: profile.phone ?? "",
+        bio: profile.bio ?? "",
+        city: profile.city ?? "",
+        state: profile.state ?? "",
+        website: profile.website ?? "",
       })
-      setProfileImage(profile.profileImage)
+      setProfileImage(profile.profileImage ?? null)
     }
     setIsEditing(false)
   }
