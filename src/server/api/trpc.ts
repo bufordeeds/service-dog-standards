@@ -47,11 +47,16 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+export const createTRPCContext = async (opts: CreateNextContextOptions | { req: Request }) => {
+  let session: Session | null = null;
 
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
+  if ('req' in opts && 'res' in opts) {
+    // Pages API route
+    session = await getServerAuthSession({ req: opts.req, res: opts.res });
+  } else if ('req' in opts) {
+    // App Router API route
+    session = await getServerAuthSession();
+  }
 
   return createInnerTRPCContext({
     session,
