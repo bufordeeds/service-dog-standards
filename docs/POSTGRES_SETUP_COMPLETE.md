@@ -56,13 +56,15 @@ Your Service Dog Standards application is now fully configured with PostgreSQL a
 
 ### Primary Connection (Pooled)
 ```
-DATABASE_URL=postgres://neondb_owner:npg_Nkjd0pZ6WcBe@ep-tiny-river-adg823zb-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgres://[username]:[password]@[host]-pooler.c-2.us-east-1.aws.neon.tech/[database]?sslmode=require
 ```
+Get the actual connection string from your `.env` file or Neon dashboard.
 
 ### Prisma Direct Connection (Non-pooled)
 ```
-POSTGRES_URL_NON_POOLING=postgres://neondb_owner:npg_Nkjd0pZ6WcBe@ep-tiny-river-adg823zb.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
+POSTGRES_URL_NON_POOLING=postgres://[username]:[password]@[host].c-2.us-east-1.aws.neon.tech/[database]?sslmode=require
 ```
+Get the actual connection string from your `.env` file or Neon dashboard.
 
 ## 🛠️ Available Commands
 
