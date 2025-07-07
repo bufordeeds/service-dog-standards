@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { auth } from "~/server/auth"
-import type { NextRequest } from "next/server"
 
 // Define protected routes and their required roles
 const protectedRoutes = {
@@ -70,7 +69,7 @@ function hasRequiredRole(userRole: string | undefined, requiredRoles: string[]):
   return requiredRoles.includes(userRole)
 }
 
-export default auth(function middleware(req: NextRequest & { auth?: any }) {
+export default auth(function middleware(req) {
     const { pathname } = req.nextUrl
     const session = req.auth
     const token = session?.user
@@ -104,7 +103,7 @@ export default auth(function middleware(req: NextRequest & { auth?: any }) {
     }
     
     return NextResponse.next()
-})
+} as any)
 
 export const config = {
   matcher: [
