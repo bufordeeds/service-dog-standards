@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { X, Camera, Image as ImageIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -159,10 +160,11 @@ function ImageUpload({
         {/* Display uploaded image */}
         {value && !isUploading && (
           <>
-            <img
+            <Image
               src={value}
               alt="Uploaded"
-              className="w-full h-full object-cover rounded-lg"
+              fill
+              className="object-cover rounded-lg"
             />
             {/* Remove button */}
             <Button

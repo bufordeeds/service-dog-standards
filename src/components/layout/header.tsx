@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
@@ -13,9 +14,11 @@ export function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {!imageError ? (
-              <img
+              <Image
                 src="/sds-logo-blue.png"
                 alt="Service Dog Standards Logo"
+                width={48}
+                height={48}
                 className="h-12 w-auto"
                 onError={() => {
                   console.log("Logo failed to load")

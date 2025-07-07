@@ -28,11 +28,11 @@ export function DashboardHeader() {
   } = userContext ?? {
     user: null,
     getDisplayName: () => "User",
-    role: "HANDLER",
+    role: "HANDLER" as any,
     profileComplete: false,
     isAuthenticated: false,
     memberNumber: undefined,
-    accountType: "INDIVIDUAL"
+    accountType: "INDIVIDUAL" as any
   }
 
   if (!isAuthenticated || !user) {

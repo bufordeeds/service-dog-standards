@@ -65,7 +65,7 @@ export function calculateProfileCompletion(user: {
   lastName?: string | null;
   phone?: string | null;
   profileImage?: string | null;
-  address?: any;
+  address?: Record<string, any>;
   bio?: string | null;
   emailVerified?: Date | null;
   agreements?: Array<{ type: string; isActive: boolean }>;

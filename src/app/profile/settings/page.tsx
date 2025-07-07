@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { api } from "@/utils/api"
-import { useUser } from "@/contexts/user-context"
+// import { useUser } from "@/contexts/user-context"
 import { toast } from "@/hooks/use-toast"
 import { 
   Eye, 
