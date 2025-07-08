@@ -6,13 +6,13 @@ import { useRoleAccess } from "@/hooks/use-access-control"
 
 interface UserContextValue {
   // Session state
-  session: any
+  session: Record<string, unknown> | null
   status: string
   isLoading: boolean
   isAuthenticated: boolean
   
   // User data
-  user: any
+  user: Record<string, unknown> | null
   userId?: string
   email?: string
   name?: string
