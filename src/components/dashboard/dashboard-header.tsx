@@ -32,10 +32,10 @@ export function DashboardHeader() {
     memberNumber,
     accountType 
   } = userContext as {
-    user: any;
+    user: Record<string, unknown>;
     getDisplayName: () => string;
     role: string;
-    profileComplete: boolean;
+    profileComplete: number;
     isAuthenticated: boolean;
     memberNumber?: string;
     accountType: string;

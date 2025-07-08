@@ -27,7 +27,7 @@ export function useSessionUser() {
     image: user?.image,
     
     // SDS-specific data
-    role: user?.role,
+    // role: user?.role, // This is provided by roleAccess spread below
     accountType: user?.accountType,
     organizationId: user?.organizationId,
     memberNumber: user?.memberNumber,

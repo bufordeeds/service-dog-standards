@@ -14,12 +14,12 @@ interface UserContextValue {
   // User data
   user: Record<string, unknown> | null
   userId?: string
-  email?: string
-  name?: string
-  role?: string
-  accountType?: string
-  organizationId?: string
-  memberNumber?: string
+  email?: string | null
+  name?: string | null
+  role?: string | null
+  accountType?: string | null
+  organizationId?: string | null
+  memberNumber?: string | null
   profileComplete: number
   
   // Role checks
@@ -47,13 +47,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   
   const value: UserContextValue = {
     // Session state
-    session,
+    session: session as Record<string, unknown> | null,
     status,
     isLoading: status === "loading",
     isAuthenticated: status === "authenticated",
     
     // User data
-    user,
+    user: user as unknown as Record<string, unknown> | null,
     userId: user?.id,
     email: user?.email,
     name: user?.name,

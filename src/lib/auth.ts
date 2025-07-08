@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { type UserRole } from "@prisma/client";
+import type { Address } from "@/types/api";
 
 // Password hashing utilities
 export async function hashPassword(password: string): Promise<string> {
@@ -65,7 +66,7 @@ export function calculateProfileCompletion(user: {
   lastName?: string | null;
   phone?: string | null;
   profileImage?: string | null;
-  address?: Record<string, unknown>;
+  address?: Address;
   bio?: string | null;
   emailVerified?: Date | null;
   role?: string;

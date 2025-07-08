@@ -103,7 +103,7 @@ export const dogsRouter = createTRPCRouter({
           },
           images: true,
           documents: {
-            orderBy: { uploadedAt: 'desc' },
+            orderBy: { createdAt: 'desc' },
           },
         },
       });
@@ -136,7 +136,7 @@ export const dogsRouter = createTRPCRouter({
               userRelationships: {
                 some: {
                   userId: ctx.session.user.id,
-                  canManageDogs: true,
+                  canEdit: true,
                 },
               },
             },

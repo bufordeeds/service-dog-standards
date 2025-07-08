@@ -30,6 +30,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
+import type { TrainerProfile } from "@/types/api"
 
 export default function TrainerProfilePage() {
   const params = useParams()
@@ -39,7 +40,7 @@ export default function TrainerProfilePage() {
 
   // This would be a real API call
   const { data: trainer, isPending, error } = api.auth.getPublicProfile?.useQuery(
-    { userId: trainerId },
+    { userId: trainerId || '' },
     { enabled: !!trainerId }
   ) ?? { data: null, isPending: true, error: null }
 
@@ -60,7 +61,7 @@ export default function TrainerProfilePage() {
     )
   }
 
-  const displayTrainer = trainer
+  const displayTrainer = trainer as TrainerProfile | null
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
@@ -178,7 +179,7 @@ export default function TrainerProfilePage() {
                       {displayTrainer.rating && (
                         <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full">
                           <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span className="font-bold">{(displayTrainer.rating as number).toFixed(1)}</span>
+                          <span className="font-bold">{displayTrainer.rating?.toFixed(1)}</span>
                           <span className="text-gray-600">({displayTrainer.reviewCount} reviews)</span>
                         </div>
                       )}
@@ -258,7 +259,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-3 md:grid-cols-2">
-                    {(displayTrainer.specialties as string[])?.map((specialty, index) => (
+                    {displayTrainer.specialties && Array.isArray(displayTrainer.specialties) && displayTrainer.specialties.map((specialty, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <CheckCircle className="h-5 w-5 text-green-500" />
                         <span className="font-medium">{specialty}</span>
@@ -386,14 +387,14 @@ export default function TrainerProfilePage() {
             </Card>
 
             {/* Credentials */}
-            {displayTrainer.certifications && displayTrainer.certifications.length > 0 && (
+            {displayTrainer?.certifications && displayTrainer.certifications.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle>Certifications</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {(displayTrainer.certifications as string[])?.map((cert, index) => (
+                    {displayTrainer.certifications.map((cert: string, index: number) => (
                       <div key={index} className="flex items-start gap-2">
                         <Award className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{cert}</span>
@@ -438,14 +439,14 @@ export default function TrainerProfilePage() {
             )}
 
             {/* Achievements */}
-            {displayTrainer.achievements && displayTrainer.achievements.length > 0 && (
+            {displayTrainer?.achievements && displayTrainer.achievements.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle>Achievements</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {(displayTrainer.achievements as string[])?.map((achievement, index) => (
+                    {displayTrainer.achievements.map((achievement: string, index: number) => (
                       <div key={index} className="flex items-start gap-2">
                         <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{achievement}</span>

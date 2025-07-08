@@ -13,6 +13,8 @@ import {
   generateMemberNumber, 
   calculateProfileCompletion 
 } from "~/lib/auth";
+import type { Address } from "@/types/api";
+import type { Prisma } from "@prisma/client";
 import { randomBytes } from "crypto";
 
 export const authRouter = createTRPCRouter({
@@ -258,7 +260,8 @@ export const authRouter = createTRPCRouter({
 
       const profileComplete = calculateProfileCompletion({
         ...user,
-        role: user.role
+        role: user.role,
+        address: user.address as Address | undefined
       });
 
       return {
@@ -275,17 +278,25 @@ export const authRouter = createTRPCRouter({
       const { city, state, ...updateData } = input;
       
       // Build address object if city or state are provided
-      const addressData: Record<string, unknown> | undefined = (city !== undefined || state !== undefined) ? {
-        ...(typeof updateData.address === 'object' && updateData.address !== null ? updateData.address as Record<string, unknown> : {}),
+      // Get existing address data and merge with updates
+      const existingUser = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { address: true }
+      });
+      
+      const existingAddress = existingUser?.address as Address | null;
+      
+      const addressData: Address | undefined = (city !== undefined || state !== undefined) ? {
+        ...existingAddress,
         ...(city !== undefined && { city }),
         ...(state !== undefined && { state }),
-      } : updateData.address;
+      } : undefined;
 
       const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
         data: {
           ...updateData,
-          ...(addressData !== undefined && { address: addressData }),
+          ...(addressData !== undefined && { address: addressData as Prisma.InputJsonValue }),
         },
         include: {
           agreements: true,
@@ -294,7 +305,8 @@ export const authRouter = createTRPCRouter({
 
       const profileComplete = calculateProfileCompletion({
         ...user,
-        role: user.role
+        role: user.role,
+        address: user.address as Address | undefined
       });
 
       // Update profile completion percentage
@@ -416,15 +428,11 @@ export const authRouter = createTRPCRouter({
           memberNumber: true,
           profileImage: true,
           bio: true,
-          city: true,
-          state: true,
+          address: true,
           website: true,
-          title: true,
           createdAt: true,
           publicProfile: true,
-          publicEmail: true,
-          publicPhone: true,
-          phone: true, // Only included if publicPhone is true
+          phone: true,
         },
       });
 
@@ -436,10 +444,14 @@ export const authRouter = createTRPCRouter({
       }
 
       // Return limited profile data based on privacy settings
+      const address = user.address as Address | null;
       return {
         ...user,
-        email: user.publicEmail ? user.email : undefined,
-        phone: user.publicPhone ? user.phone : undefined,
+        // Only return email and phone if profile is public
+        email: user.publicProfile ? user.email : undefined,
+        phone: user.publicProfile ? user.phone : undefined,
+        city: address?.city,
+        state: address?.state,
       };
     }),
 
@@ -486,21 +498,19 @@ export const authRouter = createTRPCRouter({
       // For now, we'll return all trainers and filter client-side if needed
 
       const trainers = await ctx.prisma.user.findMany({
-        where: whereClause as Record<string, unknown>,
+        where: whereClause as unknown as Record<string, unknown>,
         select: {
           id: true,
           firstName: true,
           lastName: true,
           profileImage: true,
           bio: true,
-          city: true,
-          state: true,
+          address: true,
           website: true,
           memberNumber: true,
-          publicEmail: true,
-          publicPhone: true,
           email: true,
           phone: true,
+          publicProfile: true,
           createdAt: true,
           // Trainer-specific fields (would need to be added to schema)
           businessName: true,
@@ -508,16 +518,21 @@ export const authRouter = createTRPCRouter({
         orderBy: { createdAt: 'desc' },
       });
 
-      return trainers.map(trainer => ({
-        ...trainer,
-        email: trainer.publicEmail ? trainer.email : undefined,
-        phone: trainer.publicPhone ? trainer.phone : undefined,
-        // Mock trainer-specific data until schema is updated
-        specialties: ["Service Dogs", "Behavioral Issues", "Public Access Training"],
-        yearsExperience: 10,
-        rating: 4.8,
-        reviewCount: 45,
-        isVerified: true,
-      }));
+      return trainers.map(trainer => {
+        const address = trainer.address as Address | null;
+        return {
+          ...trainer,
+          email: trainer.publicProfile ? trainer.email : undefined,
+          phone: trainer.publicProfile ? trainer.phone : undefined,
+          city: address?.city,
+          state: address?.state,
+          // Mock trainer-specific data until schema is updated
+          specialties: ["Service Dogs", "Behavioral Issues", "Public Access Training"],
+          yearsExperience: 10,
+          rating: 4.8,
+          reviewCount: 45,
+          isVerified: true,
+        };
+      });
     }),
 });

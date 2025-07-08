@@ -70,7 +70,7 @@ export function AgreementCard({ className }: AgreementCardProps) {
     switch (status) {
       case "missing":
         return {
-          variant: "destructive" as const,
+          variant: "warning" as const,
           title: "Agreement Required",
           description: "You must accept the SDS Training & Behavior Standards to continue.",
           action: "Accept Agreement",
@@ -78,7 +78,7 @@ export function AgreementCard({ className }: AgreementCardProps) {
         }
       case "expired":
         return {
-          variant: "destructive" as const,
+          variant: "warning" as const,
           title: "Agreement Expired",
           description: "Your agreement expired. Please renew to maintain access.",
           action: "Renew Agreement",
@@ -86,7 +86,7 @@ export function AgreementCard({ className }: AgreementCardProps) {
         }
       case "expiring-soon":
         return {
-          variant: "destructive" as const,
+          variant: "warning" as const,
           title: "Expires This Week",
           description: "Your agreement expires in less than 7 days. Renew now.",
           action: "Renew Agreement",
@@ -94,7 +94,7 @@ export function AgreementCard({ className }: AgreementCardProps) {
         }
       case "expiring-month":
         return {
-          variant: "destructive" as const,
+          variant: "warning" as const,
           title: "Expires This Month",
           description: "Your agreement expires in less than 30 days.",
           action: "Renew Agreement",

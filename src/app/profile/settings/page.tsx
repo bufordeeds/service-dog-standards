@@ -72,15 +72,15 @@ export default function ProfileSettingsPage() {
     if (profile) {
       setSettings({
         publicProfile: Boolean(profile.publicProfile),
-        publicEmail: Boolean(profile.publicEmail),
-        publicPhone: Boolean(profile.publicPhone),
-        showInDirectory: Boolean(profile.showInDirectory),
-        allowMessages: Boolean(profile.allowMessages ?? true),
-        emailNotifications: Boolean(profile.emailNotifications ?? true),
-        pushNotifications: Boolean(profile.pushNotifications),
-        agreementReminders: Boolean(profile.agreementReminders ?? true),
-        trainingUpdates: Boolean(profile.trainingUpdates ?? true),
-        systemAnnouncements: Boolean(profile.systemAnnouncements ?? true),
+        publicEmail: false, // Default to false since field doesn't exist in API
+        publicPhone: false, // Default to false since field doesn't exist in API
+        showInDirectory: false, // Default to false since field doesn't exist in API
+        allowMessages: true, // Default to true
+        emailNotifications: true, // Default to true
+        pushNotifications: false, // Default to false
+        agreementReminders: true, // Default to true
+        trainingUpdates: true, // Default to true
+        systemAnnouncements: true, // Default to true
       })
     }
   }, [profile])
@@ -408,7 +408,7 @@ export default function ProfileSettingsPage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction variant="destructive">
+                    <AlertDialogAction className="bg-red-600 hover:bg-red-700 text-white">
                       Yes, delete my account
                     </AlertDialogAction>
                   </AlertDialogFooter>

@@ -106,7 +106,7 @@ export default auth(function middleware(req) {
     }
     
     return NextResponse.next()
-} as any)
+})
 
 export const config = {
   matcher: [

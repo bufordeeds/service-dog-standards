@@ -23,7 +23,6 @@ import {
   Edit3, 
   Save, 
   X,
-  Camera,
   Shield,
   Calendar,
   Globe
@@ -187,17 +186,11 @@ export default function ProfilePage() {
                   </Avatar>
                   {isEditing && (
                     <ImageUpload
-                      value={profileImage}
+                      value={profileImage || undefined}
                       onChange={setProfileImage}
                       maxSize={5 * 1024 * 1024} // 5MB
-                      accept="image/*"
                       className="w-full"
-                    >
-                      <Button type="button" variant="outline" size="sm">
-                        <Camera className="mr-2 h-4 w-4" />
-                        Change Photo
-                      </Button>
-                    </ImageUpload>
+                    />
                   )}
                 </div>
 

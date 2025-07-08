@@ -47,6 +47,50 @@ export interface Dog {
   showInDirectory?: boolean;
 }
 
+// Trainer Profile Interface
+export interface TrainerProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  accountType: string;
+  profileImage?: string | null;
+  bio?: string | null;
+  businessName?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  state?: string | null;
+  website?: string | null;
+  isVerified?: boolean;
+  memberNumber?: string | null;
+  rating?: number | null;
+  reviewCount?: number;
+  yearsExperience?: number | null;
+  publicEmail?: boolean;
+  publicPhone?: boolean;
+  publicProfile?: boolean;
+  availability?: {
+    accepting?: boolean;
+    nextAvailable?: Date | null;
+    responseTime?: string;
+  };
+  specialties?: string[];
+  certifications?: string[];
+  achievements?: string[];
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+// Address type for user profiles
+export interface Address {
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+}
+
 export interface QuickAction {
   title: string;
   href: string;

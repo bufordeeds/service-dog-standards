@@ -11,11 +11,8 @@ import { api } from "@/utils/api"
 import { useUser } from "@/contexts/user-context"
 import { 
   User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+ 
   Calendar,
-  Globe,
   ArrowLeft,
   MessageCircle,
   UserPlus,
@@ -34,7 +31,7 @@ export default function PublicProfilePage() {
 
   // Get public profile data
   const { data: profile, isPending, error } = api.auth.getPublicProfile.useQuery(
-    { userId },
+    { userId: userId || '' },
     { enabled: !!userId }
   )
 
@@ -188,9 +185,9 @@ export default function PublicProfilePage() {
                 {/* Profile Image */}
                 <div className="flex flex-col items-center space-y-4">
                   <Avatar className="h-32 w-32 border-4 border-muted">
-                    <AvatarImage src={profile.profileImage || undefined} alt={profile.firstName} />
+                    <AvatarImage src={profile.profileImage || undefined} alt={profile.firstName || ''} />
                     <AvatarFallback className="text-2xl bg-sds-purple-50 text-sds-purple-600">
-                      {getInitials(profile.firstName, profile.lastName, profile.email)}
+                      {getInitials(profile.firstName || undefined, profile.lastName || undefined, profile.email || undefined)}
                     </AvatarFallback>
                   </Avatar>
                   {!profile.publicProfile && isOwnProfile && (
@@ -207,9 +204,6 @@ export default function PublicProfilePage() {
                     <h1 className="text-3xl font-bold">
                       {profile.firstName} {profile.lastName}
                     </h1>
-                    {profile.title && (
-                      <p className="text-lg text-muted-foreground">{profile.title}</p>
-                    )}
                   </div>
 
                   <div className="flex flex-wrap gap-2">
@@ -227,31 +221,10 @@ export default function PublicProfilePage() {
                   </div>
 
                   <div className="space-y-2">
-                    {profile.city && profile.state && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        {profile.city}, {profile.state}
-                      </div>
-                    )}
-                    
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       Member since {format(new Date(profile.createdAt), "MMMM yyyy")}
                     </div>
-
-                    {profile.website && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Globe className="h-4 w-4 text-muted-foreground" />
-                        <a
-                          href={profile.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sds-primary hover:underline"
-                        >
-                          {profile.website.replace(/^https?:\/\//, '')}
-                        </a>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -325,35 +298,7 @@ export default function PublicProfilePage() {
             </div>
           )}
 
-          {/* Contact Information (if public) */}
-          {(profile.publicEmail || profile.publicPhone) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-                <CardDescription>
-                  Get in touch with {profile.firstName ?? 'this user'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {profile.publicEmail && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <a href={`mailto:${profile.email ?? ''}`} className="text-sds-primary hover:underline">
-                      {profile.email}
-                    </a>
-                  </div>
-                )}
-                {profile.publicPhone && profile.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <a href={`tel:${profile.phone}`} className="text-sds-primary hover:underline">
-                      {profile.phone}
-                    </a>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          {/* Contact information would be shown here if public */}
         </div>
       </div>
     </div>

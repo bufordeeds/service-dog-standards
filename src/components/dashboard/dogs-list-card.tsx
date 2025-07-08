@@ -50,7 +50,7 @@ interface DogCardProps {
     recentAchievements: Array<{
       id: string
       title: string
-      earnedAt: Date
+      achievedAt: Date
     }>
   }
 }
@@ -65,7 +65,7 @@ function DogCard({ dog }: DogCardProps) {
       case "RETIRED":
         return "inactive"
       case "WASHED_OUT":
-        return "failed"
+        return "rejected"
       case "IN_MEMORIAM":
         return "expired"
       default:

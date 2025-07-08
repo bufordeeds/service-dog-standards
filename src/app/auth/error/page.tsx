@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react"
+import { Suspense } from "react"
 
 const errorMessages: Record<string, { title: string; description: string }> = {
   Configuration: {
@@ -26,7 +27,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
 }
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams?.get("error") || "Default"
   
@@ -86,5 +87,13 @@ export default function AuthErrorPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthErrorContent />
+    </Suspense>
   )
 }
