@@ -82,8 +82,8 @@ export interface ActivityItem {
   type: "registration" | "training" | "agreement";
   title: string;
   description: string;
-  status: string;
-  time: string;
+  status: "approved" | "pending" | "complete";
+  time: string | Date;
 }
 
 export interface DashboardData {
