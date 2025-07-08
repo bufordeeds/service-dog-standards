@@ -101,7 +101,7 @@ export default function DashboardDogsPage() {
                         <div className="flex items-center gap-2 mt-3">
                           <User className="h-4 w-4 text-gray-500" />
                           <div className="flex flex-wrap gap-1">
-                            {dog.teamMembers.slice(0, 2).map((member, index) => (
+                            {dog.teamMembers.slice(0, 2).map((member: any, index: number) => (
                               <Badge key={member.id} variant="secondary" className="text-xs">
                                 {member.name} ({member.relationship})
                               </Badge>
