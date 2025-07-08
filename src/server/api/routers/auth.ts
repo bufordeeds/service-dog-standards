@@ -276,7 +276,7 @@ export const authRouter = createTRPCRouter({
       
       // Build address object if city or state are provided
       const addressData = (city !== undefined || state !== undefined) ? {
-        ...(typeof updateData.address === 'object' ? updateData.address : {}),
+        ...(typeof updateData.address === 'object' && updateData.address !== null ? updateData.address as Record<string, unknown> : {}),
         ...(city !== undefined && { city }),
         ...(state !== undefined && { state }),
       } : updateData.address;
@@ -285,7 +285,7 @@ export const authRouter = createTRPCRouter({
         where: { id: ctx.session.user.id },
         data: {
           ...updateData,
-          ...(addressData !== undefined && { address: addressData }),
+          ...(addressData !== undefined && { address: addressData as Record<string, unknown> }),
         },
         include: {
           agreements: true,
@@ -451,9 +451,20 @@ export const authRouter = createTRPCRouter({
       specialty: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const { search, state, specialty } = input;
+      const { search, state } = input;
 
-      const whereClause: any = {
+      interface WhereClause {
+        role: string;
+        publicProfile: boolean;
+        OR?: Array<{
+          firstName?: { contains: string; mode: 'insensitive' };
+          lastName?: { contains: string; mode: 'insensitive' };
+          businessName?: { contains: string; mode: 'insensitive' };
+        }>;
+        state?: string;
+      }
+
+      const whereClause: WhereClause = {
         role: "TRAINER",
         publicProfile: true,
       };
@@ -475,7 +486,7 @@ export const authRouter = createTRPCRouter({
       // For now, we'll return all trainers and filter client-side if needed
 
       const trainers = await ctx.prisma.user.findMany({
-        where: whereClause,
+        where: whereClause as Record<string, unknown>,
         select: {
           id: true,
           firstName: true,

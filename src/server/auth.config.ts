@@ -50,10 +50,10 @@ export const authConfig: NextAuthConfig = {
   },
   providers: [],
   callbacks: {
-    async jwt({ token }) {
-      return token;
+    jwt({ token }) {
+      return Promise.resolve(token);
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
         session.user.role = token.role as UserRole;
@@ -64,7 +64,7 @@ export const authConfig: NextAuthConfig = {
         session.user.emailVerified = token.emailVerified as Date | null;
       }
       
-      return session;
+      return Promise.resolve(session);
     },
   },
 };

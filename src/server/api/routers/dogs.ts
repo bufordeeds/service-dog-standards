@@ -44,9 +44,9 @@ export const dogsRouter = createTRPCRouter({
           role: rel.user.role,
           relationship: rel.relationship,
           permissions: {
-            canView: rel.canViewProfile ?? false,
-            canEdit: rel.canEditProfile ?? false,
-            canManage: rel.canManageDogs ?? false,
+            canView: rel.canView,
+            canEdit: rel.canEdit,
+            canManage: rel.canOrder,
           },
         })),
         recentAchievements: dog.achievements,
@@ -68,7 +68,7 @@ export const dogsRouter = createTRPCRouter({
               userRelationships: {
                 some: {
                   userId: ctx.session.user.id,
-                  canViewProfile: true,
+                  canView: true,
                 },
               },
             },
