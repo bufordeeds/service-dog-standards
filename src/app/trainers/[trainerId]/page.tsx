@@ -34,7 +34,7 @@ import { format } from "date-fns"
 export default function TrainerProfilePage() {
   const params = useParams()
   const userContext = useUser()
-  const currentUser = userContext?.user
+  const currentUser = userContext?.user as { id?: string } | null
   const trainerId = Array.isArray(params?.trainerId) ? params.trainerId[0] : params?.trainerId as string
 
   // This would be a real API call
@@ -94,7 +94,7 @@ export default function TrainerProfilePage() {
     return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
   }
 
-  const isOwnProfile = (currentUser as { id?: string } | null)?.id === trainerId
+  const isOwnProfile = currentUser?.id === trainerId
 
   if (isPending) {
     return (

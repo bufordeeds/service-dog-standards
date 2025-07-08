@@ -29,7 +29,7 @@ import Link from "next/link"
 export default function PublicProfilePage() {
   const params = useParams()
   const userContext = useUser()
-  const currentUser = userContext?.user
+  const currentUser = userContext?.user as { id?: string } | null
   const userId = Array.isArray(params?.userId) ? params.userId[0] : params?.userId as string
 
   // Get public profile data
@@ -67,7 +67,7 @@ export default function PublicProfilePage() {
     return "U"
   }
 
-  const isOwnProfile = (currentUser as { id?: string } | null)?.id === userId
+  const isOwnProfile = currentUser?.id === userId
 
   if (isPending) {
     return (
