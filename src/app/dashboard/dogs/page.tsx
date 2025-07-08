@@ -2,14 +2,14 @@
 
 import * as React from "react"
 import { DashboardWrapper } from "@/components/layout/dashboard-wrapper"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { api } from "@/utils/api"
 import Link from "next/link"
-import { Plus, PawPrint, User, Award, Calendar, MapPin } from "lucide-react"
+import { Plus, PawPrint, User, Award, Calendar } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
 export default function DashboardDogsPage() {
@@ -101,7 +101,7 @@ export default function DashboardDogsPage() {
                         <div className="flex items-center gap-2 mt-3">
                           <User className="h-4 w-4 text-gray-500" />
                           <div className="flex flex-wrap gap-1">
-                            {dog.teamMembers.slice(0, 2).map((member: any, index: number) => (
+                            {dog.teamMembers.slice(0, 2).map((member: any) => (
                               <Badge key={member.id} variant="secondary" className="text-xs">
                                 {member.name} ({member.relationship})
                               </Badge>

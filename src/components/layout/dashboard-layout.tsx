@@ -110,7 +110,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
   const [isDarkMode, setIsDarkMode] = React.useState(false)
   
   // Fetch profile image separately since it's not in session anymore
-  const { data: profile } = api.auth.getProfile.useQuery(undefined, {
+  const { data: _profile } = api.auth.getProfile.useQuery(undefined, {
     enabled: !!user?.email, // Only fetch if user exists
   })
 
@@ -292,7 +292,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                     <span>{isDarkMode ? "Light mode" : "Dark mode"}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem onClick={() => void handleLogout()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -371,7 +371,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                     <span>{isDarkMode ? "Light mode" : "Dark mode"}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem onClick={() => void handleLogout()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

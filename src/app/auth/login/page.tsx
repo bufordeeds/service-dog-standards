@@ -152,7 +152,7 @@ export default function LoginPage() {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start p-2 h-auto text-xs"
-                onClick={() => handleDemoLogin("superadmin@servicedogstandards.com", "SuperAdmin123!")}
+                onClick={() => void handleDemoLogin("superadmin@servicedogstandards.com", "SuperAdmin123!")}
                 disabled={isLoading}
               >
                 <div className="text-left">
@@ -164,7 +164,7 @@ export default function LoginPage() {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start p-2 h-auto text-xs"
-                onClick={() => handleDemoLogin("admin@servicedogstandards.com", "Admin123!")}
+                onClick={() => void handleDemoLogin("admin@servicedogstandards.com", "Admin123!")}
                 disabled={isLoading}
               >
                 <div className="text-left">
@@ -176,7 +176,7 @@ export default function LoginPage() {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start p-2 h-auto text-xs"
-                onClick={() => handleDemoLogin("trainer@example.com", "Trainer123!")}
+                onClick={() => void handleDemoLogin("trainer@example.com", "Trainer123!")}
                 disabled={isLoading}
               >
                 <div className="text-left">
@@ -188,7 +188,7 @@ export default function LoginPage() {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start p-2 h-auto text-xs"
-                onClick={() => handleDemoLogin("handler@example.com", "Handler123!")}
+                onClick={() => void handleDemoLogin("handler@example.com", "Handler123!")}
                 disabled={isLoading}
               >
                 <div className="text-left">
