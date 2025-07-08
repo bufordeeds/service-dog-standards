@@ -144,10 +144,10 @@ export default function DashboardPage() {
   }
 
   // Use API data for quick actions, fallback to empty array
-  const displayQuickActions: QuickAction[] = Array.isArray(quickActions?.json) ? quickActions.json as QuickAction[] : Array.isArray(quickActions) ? quickActions as QuickAction[] : []
+  const displayQuickActions: QuickAction[] = Array.isArray(quickActions) ? quickActions as QuickAction[] : []
 
   // Use API data for recent activity, fallback to empty array  
-  const displayRecentActivity: ActivityItem[] = Array.isArray(recentActivity?.json) ? recentActivity.json as ActivityItem[] : Array.isArray(recentActivity) ? recentActivity as ActivityItem[] : []
+  const displayRecentActivity: ActivityItem[] = Array.isArray(recentActivity) ? recentActivity as ActivityItem[] : []
 
   return (
     <DashboardWrapper>
