@@ -43,52 +43,24 @@ export default function TrainerProfilePage() {
     { enabled: !!trainerId }
   ) ?? { data: null, isPending: true, error: null }
 
-  // Mock trainer data for demonstration
-  const mockTrainer = {
-    id: "trainer-1",
-    firstName: "Sarah",
-    lastName: "Wilson",
-    businessName: "Wilson Dog Training Academy",
-    profileImage: null,
-    bio: "Certified professional dog trainer with 15 years of experience specializing in service dog training and behavioral modification. I have worked with over 200 service dog teams and am passionate about helping handlers achieve independence through their partnership with their service dogs.\n\nMy training philosophy focuses on positive reinforcement methods that build confidence in both dogs and handlers. I believe in creating a supportive environment where learning is enjoyable and sustainable.",
-    city: "Seattle",
-    state: "WA",
-    website: "https://wilsondogtraining.com",
-    memberNumber: "TR-2019-001",
-    publicEmail: true,
-    publicPhone: true,
-    email: "sarah@wilsondogtraining.com",
-    phone: "(206) 555-0123",
-    createdAt: new Date("2019-03-15"),
-    // Extended trainer fields
-    businessLicense: "WA-DOG-2019-001",
-    specialties: ["Service Dogs", "Behavioral Issues", "Public Access Training", "PTSD Support", "Mobility Assistance"],
-    yearsExperience: 15,
-    rating: 4.9,
-    reviewCount: 127,
-    isVerified: true,
-    certifications: [
-      "Certified Professional Dog Trainer (CPDT-KA)",
-      "Service Dog Training Certification (IAADP)",
-      "Pet First Aid & CPR Certified",
-      "Canine Behavior Specialist"
-    ],
-    achievements: [
-      "2023 Trainer of the Year - Pacific Northwest",
-      "100+ Successful Service Dog Placements",
-      "Featured in Service Dog Quarterly Magazine"
-    ],
-    availability: {
-      accepting: true,
-      nextAvailable: new Date("2024-02-15"),
-      responseTime: "24 hours"
-    }
+  // Use real trainer data only
+  if (!trainer && !isPending) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Trainer Not Found</h1>
+            <p className="text-gray-600 mb-8">The trainer profile you're looking for could not be found.</p>
+            <Button asChild>
+              <Link href="/trainers">Browse All Trainers</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  const displayTrainer = trainer || mockTrainer
-  
-  // Type assertion for rating field since it comes from mock data
-  const rating = displayTrainer.rating as number | undefined
+  const displayTrainer = trainer
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
@@ -135,33 +107,15 @@ export default function TrainerProfilePage() {
     )
   }
 
-  // Mock reviews data
-  const reviews = [
-    {
-      id: "1",
-      author: "Jennifer M.",
-      rating: 5,
-      date: new Date("2024-01-15"),
-      text: "Sarah was incredible in helping train my PTSD service dog. Her patience and expertise made all the difference in our journey. Highly recommend!",
-      verified: true
-    },
-    {
-      id: "2", 
-      author: "Michael R.",
-      rating: 5,
-      date: new Date("2024-01-10"),
-      text: "Professional, knowledgeable, and caring. Sarah helped my mobility service dog master public access skills perfectly.",
-      verified: true
-    },
-    {
-      id: "3",
-      author: "Lisa K.",
-      rating: 4,
-      date: new Date("2023-12-20"),
-      text: "Great experience overall. Sarah's training methods are effective and she really cares about both dogs and handlers.",
-      verified: true
-    }
-  ]
+  // Reviews would come from API in real implementation
+  const reviews: Array<{
+    id: string;
+    author: string;
+    rating: number;
+    date: Date;
+    text: string;
+    verified: boolean;
+  }> = []
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
@@ -221,10 +175,10 @@ export default function TrainerProfilePage() {
                         )}
                       </div>
 
-                      {rating && (
+                      {displayTrainer.rating && (
                         <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full">
                           <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span className="font-bold">{rating.toFixed(1)}</span>
+                          <span className="font-bold">{(displayTrainer.rating as number).toFixed(1)}</span>
                           <span className="text-gray-600">({displayTrainer.reviewCount} reviews)</span>
                         </div>
                       )}
@@ -270,7 +224,7 @@ export default function TrainerProfilePage() {
                       {displayTrainer.availability?.responseTime && (
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-gray-500" />
-                          <span>Responds in {displayTrainer.availability.responseTime}</span>
+                          <span>Responds in {(displayTrainer.availability as { responseTime: string }).responseTime}</span>
                         </div>
                       )}
                     </div>
@@ -304,7 +258,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-3 md:grid-cols-2">
-                    {displayTrainer.specialties.map((specialty, index) => (
+                    {(displayTrainer.specialties as string[] || []).map((specialty, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <CheckCircle className="h-5 w-5 text-green-500" />
                         <span className="font-medium">{specialty}</span>
@@ -344,7 +298,7 @@ export default function TrainerProfilePage() {
                               )}
                             </div>
                             <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
+                              {[...Array(5) as unknown[]].map((_, i) => (
                                 <Star 
                                   key={i} 
                                   className={`h-4 w-4 ${
@@ -439,7 +393,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {displayTrainer.certifications.map((cert, index) => (
+                    {(displayTrainer.certifications as string[] || []).map((cert, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <Award className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{cert}</span>
@@ -459,24 +413,24 @@ export default function TrainerProfilePage() {
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
-                      displayTrainer.availability.accepting ? 'bg-green-500' : 'bg-red-500'
+                      (displayTrainer.availability as { accepting?: boolean })?.accepting ? 'bg-green-500' : 'bg-red-500'
                     }`} />
                     <span className="font-medium">
-                      {displayTrainer.availability.accepting ? 'Accepting new clients' : 'Not accepting new clients'}
+                      {(displayTrainer.availability as { accepting?: boolean })?.accepting ? 'Accepting new clients' : 'Not accepting new clients'}
                     </span>
                   </div>
                   
-                  {displayTrainer.availability.nextAvailable && (
+                  {(displayTrainer.availability as { nextAvailable?: Date })?.nextAvailable && (
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Calendar className="h-4 w-4" />
-                      <span>Next available: {format(displayTrainer.availability.nextAvailable, "MMMM d, yyyy")}</span>
+                      <span>Next available: {format((displayTrainer.availability as { nextAvailable: Date }).nextAvailable, "MMMM d, yyyy")}</span>
                     </div>
                   )}
 
-                  {displayTrainer.availability.responseTime && (
+                  {(displayTrainer.availability as { responseTime?: string })?.responseTime && (
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Clock className="h-4 w-4" />
-                      <span>Typical response: {displayTrainer.availability.responseTime}</span>
+                      <span>Typical response: {(displayTrainer.availability as { responseTime: string }).responseTime}</span>
                     </div>
                   )}
                 </CardContent>
@@ -491,7 +445,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {displayTrainer.achievements.map((achievement, index) => (
+                    {(displayTrainer.achievements as string[] || []).map((achievement, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{achievement}</span>
