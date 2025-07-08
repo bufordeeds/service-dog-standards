@@ -50,7 +50,7 @@ export default function TrainerProfilePage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Trainer Not Found</h1>
-            <p className="text-gray-600 mb-8">The trainer profile you're looking for could not be found.</p>
+            <p className="text-gray-600 mb-8">The trainer profile you&apos;re looking for could not be found.</p>
             <Button asChild>
               <Link href="/trainers">Browse All Trainers</Link>
             </Button>
@@ -221,7 +221,7 @@ export default function TrainerProfilePage() {
                         </div>
                       )}
 
-                      {displayTrainer.availability?.responseTime && (
+                      {(displayTrainer.availability as { responseTime?: string })?.responseTime && (
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-gray-500" />
                           <span>Responds in {(displayTrainer.availability as { responseTime: string }).responseTime}</span>
@@ -258,7 +258,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-3 md:grid-cols-2">
-                    {(displayTrainer.specialties as string[] || []).map((specialty, index) => (
+                    {(displayTrainer.specialties as string[])?.map((specialty, index) => (
                       <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
                         <CheckCircle className="h-5 w-5 text-green-500" />
                         <span className="font-medium">{specialty}</span>
@@ -393,7 +393,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {(displayTrainer.certifications as string[] || []).map((cert, index) => (
+                    {(displayTrainer.certifications as string[])?.map((cert, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <Award className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{cert}</span>
@@ -445,7 +445,7 @@ export default function TrainerProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {(displayTrainer.achievements as string[] || []).map((achievement, index) => (
+                    {(displayTrainer.achievements as string[])?.map((achievement, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm">{achievement}</span>
