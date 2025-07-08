@@ -40,9 +40,9 @@ export default function AuthErrorPage() {
             <AlertTriangle className="w-6 h-6 text-destructive" />
           </div>
           <div>
-            <CardTitle className="text-2xl">{errorInfo.title}</CardTitle>
+            <CardTitle className="text-2xl">{errorInfo?.title ?? "Authentication Error"}</CardTitle>
             <CardDescription className="mt-2">
-              {errorInfo.description}
+              {errorInfo?.description ?? "An error occurred during authentication. Please try again."}
             </CardDescription>
           </div>
         </CardHeader>
