@@ -28,7 +28,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams()
-  const error = searchParams.get("error") || "Default"
+  const error = searchParams?.get("error") || "Default"
   
   const errorInfo = errorMessages[error] || errorMessages.Default
 

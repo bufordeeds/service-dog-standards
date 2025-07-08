@@ -17,6 +17,7 @@ import { useUser } from "@/contexts/user-context"
 import { api } from "@/utils/api"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
+import type { QuickAction, ActivityItem } from "@/types/api"
 
 export default function DashboardPage() {
   const { isTrainer, isAdmin, isSuperAdmin } = useUser()
@@ -143,10 +144,10 @@ export default function DashboardPage() {
   }
 
   // Use API data for quick actions, fallback to empty array
-  const displayQuickActions = Array.isArray(quickActions?.json) ? quickActions.json : Array.isArray(quickActions) ? quickActions : []
+  const displayQuickActions: QuickAction[] = Array.isArray(quickActions?.json) ? quickActions.json as QuickAction[] : Array.isArray(quickActions) ? quickActions as QuickAction[] : []
 
   // Use API data for recent activity, fallback to empty array  
-  const displayRecentActivity = Array.isArray(recentActivity?.json) ? recentActivity.json : Array.isArray(recentActivity) ? recentActivity : []
+  const displayRecentActivity: ActivityItem[] = Array.isArray(recentActivity?.json) ? recentActivity.json as ActivityItem[] : Array.isArray(recentActivity) ? recentActivity as ActivityItem[] : []
 
   return (
     <DashboardWrapper>

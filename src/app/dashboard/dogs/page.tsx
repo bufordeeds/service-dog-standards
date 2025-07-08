@@ -11,9 +11,12 @@ import { api } from "@/utils/api"
 import Link from "next/link"
 import { Plus, PawPrint, User, Award, Calendar } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import type { Dog } from "@/types/api"
 
 export default function DashboardDogsPage() {
   const { data: userDogs, isPending } = api.dogs.getUserDogs.useQuery()
+  
+  const dogs: Dog[] = userDogs ?? []
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0] ?? '').join('').toUpperCase().slice(0, 2)
@@ -56,9 +59,9 @@ export default function DashboardDogsPage() {
           </Button>
         </div>
 
-        {userDogs && userDogs.length > 0 ? (
+        {dogs.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {userDogs.map((dog) => (
+            {dogs.map((dog) => (
               <Card key={dog.id} className="group hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
@@ -101,7 +104,7 @@ export default function DashboardDogsPage() {
                         <div className="flex items-center gap-2 mt-3">
                           <User className="h-4 w-4 text-gray-500" />
                           <div className="flex flex-wrap gap-1">
-                            {dog.teamMembers.slice(0, 2).map((member: any) => (
+                            {dog.teamMembers.slice(0, 2).map((member) => (
                               <Badge key={member.id} variant="secondary" className="text-xs">
                                 {member.name} ({member.relationship})
                               </Badge>
