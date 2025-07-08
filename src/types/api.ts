@@ -15,11 +15,11 @@ export interface TeamMember {
 export interface Achievement {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   type: string;
-  achievedAt: string;
-  issuer: string;
-  certificateNumber?: string;
+  achievedAt: string | Date;
+  issuer: string | null;
+  certificateNumber?: string | null;
 }
 
 export interface Dog {
@@ -32,9 +32,19 @@ export interface Dog {
   bio?: string | null;
   teamMembers: TeamMember[];
   recentAchievements: Achievement[];
-  trainingEndDate?: string | null;
-  createdAt: string;
-  updatedAt: string;
+  trainingEndDate?: string | Date | null;
+  trainingStartDate?: string | Date | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  // Additional fields that might be returned from API
+  ownerId?: string;
+  organizationId?: string;
+  weight?: number | null;
+  color?: string | null;
+  gender?: string | null;
+  birthDate?: string | Date | null;
+  publicProfile?: boolean;
+  showInDirectory?: boolean;
 }
 
 export interface QuickAction {
