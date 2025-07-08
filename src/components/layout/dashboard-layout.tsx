@@ -109,10 +109,8 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
   const pathname = usePathname()
   const [isDarkMode, setIsDarkMode] = React.useState(false)
   
-  // Fetch profile image separately since it's not in session anymore
-  const { data: _profile } = api.auth.getProfile.useQuery(undefined, {
-    enabled: !!user?.email, // Only fetch if user exists
-  })
+  // Note: Profile image fetching was moved to individual components as needed
+  // to avoid unused variable warnings in strict mode
 
   const filteredNavItems = navigationItems.filter(item => {
     if (!item.roles) return true
