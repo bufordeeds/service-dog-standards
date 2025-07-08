@@ -33,7 +33,8 @@ import { format } from "date-fns"
 
 export default function TrainerProfilePage() {
   const params = useParams()
-  const { user: currentUser } = useUser()
+  const userContext = useUser()
+  const currentUser = userContext?.user
   const trainerId = Array.isArray(params?.trainerId) ? params.trainerId[0] : params?.trainerId as string
 
   // This would be a real API call
@@ -85,12 +86,15 @@ export default function TrainerProfilePage() {
   }
 
   const displayTrainer = trainer || mockTrainer
+  
+  // Type assertion for rating field since it comes from mock data
+  const rating = displayTrainer.rating as number | undefined
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
   }
 
-  const isOwnProfile = currentUser?.id === trainerId
+  const isOwnProfile = (currentUser as { id?: string } | null)?.id === trainerId
 
   if (isPending) {
     return (
@@ -217,10 +221,10 @@ export default function TrainerProfilePage() {
                         )}
                       </div>
 
-                      {displayTrainer.rating && (
+                      {rating && (
                         <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full">
                           <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                          <span className="font-bold">{displayTrainer.rating.toFixed(1)}</span>
+                          <span className="font-bold">{rating.toFixed(1)}</span>
                           <span className="text-gray-600">({displayTrainer.reviewCount} reviews)</span>
                         </div>
                       )}

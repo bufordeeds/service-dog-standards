@@ -31,7 +31,15 @@ export function DashboardHeader() {
     isAuthenticated,
     memberNumber,
     accountType 
-  } = userContext
+  } = userContext as {
+    user: any;
+    getDisplayName: () => string;
+    role: string;
+    profileComplete: boolean;
+    isAuthenticated: boolean;
+    memberNumber?: string;
+    accountType: string;
+  }
 
   if (!isAuthenticated || !user) {
     return null
