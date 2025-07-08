@@ -91,18 +91,18 @@ const authConfig = {
     async jwt({ token, user, trigger }) {
       if (user) {
         // Initial sign in - add user data to token
-        token.id = user.id;
-        token.role = user.role;
-        token.accountType = user.accountType;
-        token.organizationId = user.organizationId;
-        token.profileComplete = user.profileComplete;
-        token.memberNumber = user.memberNumber;
-        token.emailVerified = user.emailVerified;
-      } else if (trigger === "update" && token.id) {
+        token.id = user.id as string;
+        token.role = user.role as string;
+        token.accountType = user.accountType as string;
+        token.organizationId = user.organizationId as string;
+        token.profileComplete = user.profileComplete as number;
+        token.memberNumber = user.memberNumber as string | undefined;
+        token.emailVerified = user.emailVerified as Date | null;
+      } else if (trigger === "update" && typeof token.id === "string") {
         // Only refresh user data when explicitly triggered by updateSession()
         try {
           const currentUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
+            where: { id: token.id },
             include: { 
               agreements: { where: { isActive: true } }
             }

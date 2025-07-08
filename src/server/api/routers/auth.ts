@@ -275,7 +275,7 @@ export const authRouter = createTRPCRouter({
       const { city, state, ...updateData } = input;
       
       // Build address object if city or state are provided
-      const addressData = (city !== undefined || state !== undefined) ? {
+      const addressData: Record<string, unknown> | undefined = (city !== undefined || state !== undefined) ? {
         ...(typeof updateData.address === 'object' && updateData.address !== null ? updateData.address as Record<string, unknown> : {}),
         ...(city !== undefined && { city }),
         ...(state !== undefined && { state }),
