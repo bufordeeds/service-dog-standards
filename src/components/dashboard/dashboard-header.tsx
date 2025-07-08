@@ -18,6 +18,11 @@ import {
 
 export function DashboardHeader() {
   const userContext = useUser()
+  
+  if (!userContext) {
+    return null
+  }
+  
   const { 
     user, 
     getDisplayName, 
@@ -26,15 +31,7 @@ export function DashboardHeader() {
     isAuthenticated,
     memberNumber,
     accountType 
-  } = userContext ?? {
-    user: null,
-    getDisplayName: () => "User",
-    role: "HANDLER" as const,
-    profileComplete: false,
-    isAuthenticated: false,
-    memberNumber: undefined,
-    accountType: "INDIVIDUAL" as const
-  }
+  } = userContext
 
   if (!isAuthenticated || !user) {
     return null

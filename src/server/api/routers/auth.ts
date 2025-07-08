@@ -285,7 +285,7 @@ export const authRouter = createTRPCRouter({
         where: { id: ctx.session.user.id },
         data: {
           ...updateData,
-          ...(addressData !== undefined && { address: addressData as Record<string, unknown> }),
+          ...(addressData !== undefined && { address: addressData }),
         },
         include: {
           agreements: true,
