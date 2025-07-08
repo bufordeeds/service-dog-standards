@@ -142,7 +142,7 @@ export default function DashboardDogsPage() {
                           {dog.trainingEndDate && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              <span>Completed {formatDistanceToNow(new Date(dog.trainingEndDate), { addSuffix: true })}</span>
+                              <span>Completed {formatDistanceToNow(new Date(dog.trainingEndDate!), { addSuffix: true })}</span>
                             </div>
                           )}
                         </div>
