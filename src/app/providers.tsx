@@ -7,6 +7,7 @@ import { createTRPCReact } from "@trpc/react-query"
 import { useState } from "react"
 import { SessionProvider } from "next-auth/react"
 import superjson from "superjson"
+import { UserProvider } from "@/contexts/user-context"
 
 import type { AppRouter } from "@/server/api/root"
 
@@ -45,12 +46,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <api.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </api.Provider>
+      <UserProvider>
+        <api.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </api.Provider>
+      </UserProvider>
     </SessionProvider>
   )
 }

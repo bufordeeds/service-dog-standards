@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { auth } from "~/server/auth"
+import NextAuth from "next-auth"
+import { authConfig } from "~/server/auth.config"
 
 // Define protected routes and their required roles
 const protectedRoutes = {
@@ -68,6 +69,8 @@ function hasRequiredRole(userRole: string | undefined, requiredRoles: string[]):
   if (!userRole) return false
   return requiredRoles.includes(userRole)
 }
+
+const { auth } = NextAuth(authConfig)
 
 export default auth(function middleware(req) {
     const { pathname } = req.nextUrl

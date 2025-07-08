@@ -256,7 +256,10 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      const profileComplete = calculateProfileCompletion(user);
+      const profileComplete = calculateProfileCompletion({
+        ...user,
+        role: user.role
+      });
 
       return {
         ...user,
@@ -268,15 +271,31 @@ export const authRouter = createTRPCRouter({
   updateProfile: protectedProcedure
     .input(profileUpdateSchema)
     .mutation(async ({ ctx, input }) => {
+      // Extract city and state to build address object
+      const { city, state, ...updateData } = input;
+      
+      // Build address object if city or state are provided
+      const addressData = (city !== undefined || state !== undefined) ? {
+        ...(typeof updateData.address === 'object' ? updateData.address : {}),
+        ...(city !== undefined && { city }),
+        ...(state !== undefined && { state }),
+      } : updateData.address;
+
       const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
-        data: input,
+        data: {
+          ...updateData,
+          ...(addressData !== undefined && { address: addressData }),
+        },
         include: {
           agreements: true,
         },
       });
 
-      const profileComplete = calculateProfileCompletion(user);
+      const profileComplete = calculateProfileCompletion({
+        ...user,
+        role: user.role
+      });
 
       // Update profile completion percentage
       await ctx.prisma.user.update({
@@ -422,5 +441,72 @@ export const authRouter = createTRPCRouter({
         email: user.publicEmail ? user.email : undefined,
         phone: user.publicPhone ? user.phone : undefined,
       };
+    }),
+
+  // Get trainers directory
+  getTrainers: protectedProcedure
+    .input(z.object({
+      search: z.string().optional(),
+      state: z.string().optional(),
+      specialty: z.string().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { search, state, specialty } = input;
+
+      const whereClause: any = {
+        role: "TRAINER",
+        publicProfile: true,
+      };
+
+      // Add search filters
+      if (search) {
+        whereClause.OR = [
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+          { businessName: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (state) {
+        whereClause.state = state;
+      }
+
+      // Note: specialty filtering would require a separate specialties table
+      // For now, we'll return all trainers and filter client-side if needed
+
+      const trainers = await ctx.prisma.user.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          profileImage: true,
+          bio: true,
+          city: true,
+          state: true,
+          website: true,
+          memberNumber: true,
+          publicEmail: true,
+          publicPhone: true,
+          email: true,
+          phone: true,
+          createdAt: true,
+          // Trainer-specific fields (would need to be added to schema)
+          businessName: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return trainers.map(trainer => ({
+        ...trainer,
+        email: trainer.publicEmail ? trainer.email : undefined,
+        phone: trainer.publicPhone ? trainer.phone : undefined,
+        // Mock trainer-specific data until schema is updated
+        specialties: ["Service Dogs", "Behavioral Issues", "Public Access Training"],
+        yearsExperience: 10,
+        rating: 4.8,
+        reviewCount: 45,
+        isVerified: true,
+      }));
     }),
 });

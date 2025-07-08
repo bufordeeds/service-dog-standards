@@ -53,16 +53,14 @@ function ImageUpload({
           throw new Error(`File too large. Maximum size is ${maxSize}MB`)
         }
 
-        // Create preview URL
+        // Create preview URL (temporary - will be lost on page refresh)
+        // TODO: PRODUCTION - Replace with proper cloud storage (AWS S3, Cloudinary, etc.)
         const previewUrl = URL.createObjectURL(file)
         onChange?.(previewUrl)
 
-        // TODO: Implement actual file upload to storage service
-        // For now, just use the preview URL
         console.log("File selected:", file.name, file.size, file.type)
       } catch (err) {
         setError(err instanceof Error ? err.message : "Upload failed")
-      } finally {
         setIsUploading(false)
       }
     },

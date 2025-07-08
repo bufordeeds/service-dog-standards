@@ -51,6 +51,38 @@ export default function LoginPage() {
     }
   }
 
+  const handleDemoLogin = async (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail)
+    setPassword(demoPassword)
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const result = await signIn("credentials", {
+        email: demoEmail,
+        password: demoPassword,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError("Invalid email or password")
+      } else {
+        // Check if login was successful by getting the session
+        const session = await getSession()
+        if (session) {
+          router.push(callbackUrl)
+          router.refresh()
+        } else {
+          setError("Login failed. Please try again.")
+        }
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sds-purple-50 to-sds-teal-50 p-4">
       <Card className="w-full max-w-md">
@@ -115,11 +147,55 @@ export default function LoginPage() {
           {/* Test Accounts Info */}
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <h4 className="text-sm font-medium mb-2">Demo Accounts:</h4>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <div><strong>Super Admin:</strong> superadmin@servicedogstandards.com / SuperAdmin123!</div>
-              <div><strong>Admin:</strong> admin@servicedogstandards.com / Admin123!</div>
-              <div><strong>Trainer:</strong> trainer@example.com / Trainer123!</div>
-              <div><strong>Handler:</strong> handler@example.com / Handler123!</div>
+            <div className="text-xs space-y-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start p-2 h-auto text-xs"
+                onClick={() => handleDemoLogin("superadmin@servicedogstandards.com", "SuperAdmin123!")}
+                disabled={isLoading}
+              >
+                <div className="text-left">
+                  <div><strong>Super Admin:</strong> superadmin@servicedogstandards.com</div>
+                  <div className="text-muted-foreground">Click to login</div>
+                </div>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start p-2 h-auto text-xs"
+                onClick={() => handleDemoLogin("admin@servicedogstandards.com", "Admin123!")}
+                disabled={isLoading}
+              >
+                <div className="text-left">
+                  <div><strong>Admin:</strong> admin@servicedogstandards.com</div>
+                  <div className="text-muted-foreground">Click to login</div>
+                </div>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start p-2 h-auto text-xs"
+                onClick={() => handleDemoLogin("trainer@example.com", "Trainer123!")}
+                disabled={isLoading}
+              >
+                <div className="text-left">
+                  <div><strong>Trainer:</strong> trainer@example.com</div>
+                  <div className="text-muted-foreground">Click to login</div>
+                </div>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start p-2 h-auto text-xs"
+                onClick={() => handleDemoLogin("handler@example.com", "Handler123!")}
+                disabled={isLoading}
+              >
+                <div className="text-left">
+                  <div><strong>Handler:</strong> handler@example.com</div>
+                  <div className="text-muted-foreground">Click to login</div>
+                </div>
+              </Button>
             </div>
           </div>
         </CardContent>

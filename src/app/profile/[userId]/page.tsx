@@ -32,7 +32,7 @@ export default function PublicProfilePage() {
   const userId = Array.isArray(params?.userId) ? params.userId[0] : params?.userId as string
 
   // Get public profile data
-  const { data: profile, isLoading, error } = api.auth.getPublicProfile.useQuery(
+  const { data: profile, isPending, error } = api.auth.getPublicProfile.useQuery(
     { userId },
     { enabled: !!userId }
   )
@@ -68,7 +68,7 @@ export default function PublicProfilePage() {
 
   const isOwnProfile = currentUser?.id === userId
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">

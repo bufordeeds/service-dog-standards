@@ -3,10 +3,12 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { api } from "@/utils/api"
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -54,7 +56,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     title: "Profile",
-    href: "/dashboard/profile",
+    href: "/profile",
     icon: User,
   },
   {
@@ -106,6 +108,11 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, user }: DashboardLayoutProps) {
   const pathname = usePathname()
   const [isDarkMode, setIsDarkMode] = React.useState(false)
+  
+  // Fetch profile image separately since it's not in session anymore
+  const { data: profile } = api.auth.getProfile.useQuery(undefined, {
+    enabled: !!user?.email, // Only fetch if user exists
+  })
 
   const filteredNavItems = navigationItems.filter(item => {
     if (!item.roles) return true
@@ -115,6 +122,13 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode)
     document.documentElement.classList.toggle("dark")
+  }
+
+  const handleLogout = async () => {
+    await signOut({ 
+      callbackUrl: "/auth/login",
+      redirect: true 
+    })
   }
 
   const getUserInitials = () => {
@@ -278,7 +292,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                     <span>{isDarkMode ? "Light mode" : "Dark mode"}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -337,7 +351,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile">
+                    <Link href="/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
@@ -357,7 +371,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                     <span>{isDarkMode ? "Light mode" : "Dark mode"}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

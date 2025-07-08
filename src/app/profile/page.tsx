@@ -14,6 +14,7 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { api } from "@/utils/api"
 import { useUser } from "@/contexts/user-context"
 import { toast } from "@/hooks/use-toast"
+import { useSession } from "next-auth/react"
 import { 
   User, 
   Mail, 
@@ -32,6 +33,7 @@ import Link from "next/link"
 
 export default function ProfilePage() {
   const { getInitials } = useUser()
+  const { update: updateSession } = useSession()
   const [isEditing, setIsEditing] = React.useState(false)
   const [profileImage, setProfileImage] = React.useState<string | null>(null)
   
@@ -45,6 +47,7 @@ export default function ProfilePage() {
       })
       setIsEditing(false)
       void refetch()
+      void updateSession() // Refresh the session to update user context
     },
     onError: (error) => {
       toast({
@@ -68,14 +71,15 @@ export default function ProfilePage() {
 
   React.useEffect(() => {
     if (profile) {
+      const address = profile.address as { city?: string; state?: string } | null
       setFormData({
         firstName: profile.firstName ?? "",
         lastName: profile.lastName ?? "",
         email: profile.email ?? "",
         phone: profile.phone ?? "",
         bio: profile.bio ?? "",
-        city: profile.city ?? "",
-        state: profile.state ?? "",
+        city: address?.city ?? "",
+        state: address?.state ?? "",
         website: profile.website ?? "",
       })
       setProfileImage(profile.profileImage ?? null)
@@ -92,14 +96,15 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     if (profile) {
+      const address = profile.address as { city?: string; state?: string } | null
       setFormData({
         firstName: profile.firstName ?? "",
         lastName: profile.lastName ?? "",
         email: profile.email ?? "",
         phone: profile.phone ?? "",
         bio: profile.bio ?? "",
-        city: profile.city ?? "",
-        state: profile.state ?? "",
+        city: address?.city ?? "",
+        state: address?.state ?? "",
         website: profile.website ?? "",
       })
       setProfileImage(profile.profileImage ?? null)
@@ -407,10 +412,10 @@ export default function ProfilePage() {
               <Button 
                 type="submit" 
                 className="sds-btn-primary"
-                disabled={updateProfileMutation.isLoading}
+                disabled={updateProfileMutation.isPending}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {updateProfileMutation.isLoading ? "Saving..." : "Save Changes"}
+                {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           )}

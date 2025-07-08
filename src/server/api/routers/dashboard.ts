@@ -324,7 +324,7 @@ export const dashboardRouter = createTRPCRouter({
           {
             title: "My Profile",
             description: "Update trainer profile",
-            href: "/trainer/profile",
+            href: "/profile",
             icon: "User",
           },
         ];

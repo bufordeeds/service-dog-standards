@@ -199,7 +199,7 @@ function EmptyState() {
 }
 
 export function DogsListCard({ className }: DogsListCardProps) {
-  const { data: dogs, isLoading } = api.dogs.getUserDogs.useQuery()
+  const { data: dogs, isPending } = api.dogs.getUserDogs.useQuery()
   const { data: stats } = api.dogs.getDogStats.useQuery()
 
   return (
@@ -224,7 +224,7 @@ export function DogsListCard({ className }: DogsListCardProps) {
         )}
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {isPending ? (
           <div className="flex items-center justify-center py-12">
             <LoadingSpinner />
           </div>

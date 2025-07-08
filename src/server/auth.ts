@@ -1,7 +1,3 @@
-import {
-  type NextAuthConfig,
-  type DefaultSession,
-} from "next-auth";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -9,53 +5,14 @@ import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { loginSchema } from "~/lib/validations/auth";
 import { verifyPassword, calculateProfileCompletion } from "~/lib/auth";
-import type { UserRole, AccountType } from "@prisma/client";
+import { authConfig as baseAuthConfig } from "~/server/auth.config";
 
 /**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
+ * Extended auth configuration with database providers
+ * This extends the base config with providers that require database access
  */
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      role: UserRole;
-      accountType: AccountType;
-      organizationId: string;
-      profileComplete: number;
-      memberNumber?: string;
-      emailVerified?: Date | null;
-    } & DefaultSession["user"];
-  }
-
-  interface User {
-    role: UserRole;
-    accountType: AccountType;
-    organizationId: string;
-    profileComplete: number;
-    memberNumber?: string;
-    emailVerified?: Date | null;
-  }
-}
-
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
-export const authConfig: NextAuthConfig = {
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
-  },
-  pages: {
-    signIn: '/auth/login',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
-  },
+const authConfig = {
+  ...baseAuthConfig,
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -102,13 +59,17 @@ export const authConfig: NextAuthConfig = {
         });
 
         // Calculate profile completion
-        const profileComplete = calculateProfileCompletion(user);
+        const profileComplete = calculateProfileCompletion({
+          ...user,
+          role: user.role
+        });
 
         return {
           id: user.id,
           email: user.email,
           name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email,
-          image: user.profileImage,
+          // Don't include image in JWT token - can cause headers too big error
+          // image: user.profileImage,
           role: user.role,
           accountType: user.accountType,
           organizationId: user.organizationId,
@@ -126,7 +87,8 @@ export const authConfig: NextAuthConfig = {
     ] : []),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    ...baseAuthConfig.callbacks,
+    async jwt({ token, user, trigger }) {
       if (user) {
         // Initial sign in - add user data to token
         token.id = user.id;
@@ -136,6 +98,34 @@ export const authConfig: NextAuthConfig = {
         token.profileComplete = user.profileComplete;
         token.memberNumber = user.memberNumber;
         token.emailVerified = user.emailVerified;
+      } else if (trigger === "update" && token.id) {
+        // Only refresh user data when explicitly triggered by updateSession()
+        try {
+          const currentUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            include: { 
+              agreements: { where: { isActive: true } }
+            }
+          });
+          
+          if (currentUser) {
+            const profileComplete = calculateProfileCompletion({
+              ...currentUser,
+              role: currentUser.role
+            });
+            
+            // Update token with fresh user data (excluding image to avoid large headers)
+            token.profileComplete = profileComplete;
+            token.name = currentUser.firstName && currentUser.lastName 
+              ? `${currentUser.firstName} ${currentUser.lastName}` 
+              : currentUser.email;
+            // Don't store image in token - causes headers too big error
+            // token.image = currentUser.profileImage;
+          }
+        } catch (error) {
+          console.error('Error refreshing user data in JWT callback:', error);
+          // Don't fail the entire auth flow if refresh fails
+        }
       }
       return Promise.resolve(token);
     },
@@ -160,6 +150,9 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        // Don't include image in session - fetch from profile API when needed
+        // session.user.image = token.image as string;
         session.user.role = token.role as string;
         session.user.accountType = token.accountType as string;
         session.user.organizationId = token.organizationId as string;

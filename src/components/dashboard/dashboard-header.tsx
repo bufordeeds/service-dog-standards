@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import Link from "next/link"
 import { 
   Bell, 
   Settings, 
@@ -135,9 +136,11 @@ export function DashboardHeader() {
               </div>
             )}
             
-            <Button className="w-full" variant="outline">
-              <User className="w-4 h-4 mr-2" />
-              Complete Profile
+            <Button className="w-full" variant="outline" asChild>
+              <Link href="/profile">
+                <User className="w-4 h-4 mr-2" />
+                Complete Profile
+              </Link>
             </Button>
           </CardContent>
         </Card>

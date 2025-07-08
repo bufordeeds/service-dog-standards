@@ -23,7 +23,7 @@ export const dogsRouter = createTRPCRouter({
             },
           },
           achievements: {
-            orderBy: { earnedAt: 'desc' },
+            orderBy: { achievedAt: 'desc' },
             take: 3, // Get latest 3 achievements
           },
           images: {
@@ -99,7 +99,7 @@ export const dogsRouter = createTRPCRouter({
             },
           },
           achievements: {
-            orderBy: { earnedAt: 'desc' },
+            orderBy: { achievedAt: 'desc' },
           },
           images: true,
           documents: {

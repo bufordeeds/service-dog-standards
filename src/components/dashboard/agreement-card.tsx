@@ -278,10 +278,10 @@ export function AgreementCard({ className }: AgreementCardProps) {
                   <div className="flex gap-2">
                     <Button 
                       onClick={() => void handleAcceptAgreement()}
-                      disabled={acceptAgreementMutation.isLoading}
+                      disabled={acceptAgreementMutation.isPending}
                       className="flex-1"
                     >
-                      {acceptAgreementMutation.isLoading ? "Accepting..." : "Accept Agreement"}
+                      {acceptAgreementMutation.isPending ? "Accepting..." : "Accept Agreement"}
                     </Button>
                     <Button 
                       variant="outline" 

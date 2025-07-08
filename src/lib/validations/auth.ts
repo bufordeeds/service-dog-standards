@@ -62,6 +62,7 @@ export const profileUpdateSchema = z.object({
   website: z.string().url("Invalid website URL").optional().or(z.literal("")),
   profileImage: z.string().optional(),
   title: z.string().optional(),
+  businessName: z.string().optional(),
   
   // Privacy settings
   publicProfile: z.boolean().optional(),

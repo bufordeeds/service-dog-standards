@@ -68,11 +68,13 @@ export function calculateProfileCompletion(user: {
   address?: Record<string, any>;
   bio?: string | null;
   emailVerified?: Date | null;
+  role?: string;
   agreements?: Array<{ type: string; isActive: boolean }>;
 }): number {
   let completed = 0;
-  const total = 8;
+  let total = 8;
 
+  // Basic profile requirements for all users
   if (user.firstName) completed++;
   if (user.lastName) completed++;
   if (user.phone) completed++;
@@ -80,7 +82,15 @@ export function calculateProfileCompletion(user: {
   if (user.address) completed++;
   if (user.bio) completed++;
   if (user.emailVerified) completed++;
-  if (user.agreements?.some(a => a.type === 'TRAINING_BEHAVIOR_STANDARDS' && a.isActive)) completed++;
+
+  // Agreement requirements vary by role
+  if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+    // Admins don't need training standards agreements
+    total = 7; // Remove agreement requirement
+  } else {
+    // Regular users (handlers, trainers) need training standards agreement
+    if (user.agreements?.some(a => a.type === 'TRAINING_BEHAVIOR_STANDARDS' && a.isActive)) completed++;
+  }
 
   return Math.round((completed / total) * 100);
 }
